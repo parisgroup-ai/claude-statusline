@@ -205,23 +205,43 @@ fmt_k() {
   fi
 }
 
-# -------- cost/tokens/ctx segment (segment 4) --------
+# -------- cost / tokens / ctx (three independent segments) --------
 cost_fmt=$(printf '%.2f' "${cost_usd:-0}" 2>/dev/null || echo "0.00")
 seg_cost="${C_GREEN}\$${cost_fmt}${C_RESET}"
 
-tok_render=""
+seg_tokens=""
 if [ -n "${tok_input:-}" ]; then
-  tok_render="$(fmt_k "$tok_input")${C_YELLOW}${ARROW_UP}${C_RESET}/$(fmt_k "${tok_output:-0}")${C_CYAN}${ARROW_DOWN}${C_RESET}"
+  seg_tokens="$(fmt_k "$tok_input")${C_YELLOW}${ARROW_UP}${C_RESET}/$(fmt_k "${tok_output:-0}")${C_CYAN}${ARROW_DOWN}${C_RESET}"
 fi
 
-seg_four="$seg_cost"
-[ -n "${tok_render:-}" ] && seg_four="${seg_four}  ${tok_render}"
-[ -n "${ctx_render:-}" ] && seg_four="${seg_four}  ${ctx_render}"
+seg_ctx="${ctx_render:-}"
 
-# -------- final compose --------
-line="${seg_model}"
-[ -n "${seg_project:-}" ] && line="${line} ${C_GREY}│${C_RESET} ${seg_project}"
-[ -n "${seg_git:-}" ]     && line="${line} ${C_GREY}│${C_RESET} ${seg_git}"
-line="${line} ${C_GREY}│${C_RESET} ${seg_four}"
+# -------- final compose (driven by CC_STATUSLINE_SEGMENTS) --------
+# Comma-separated whitelist+order. Valid tokens: model, project, git,
+# cost, tokens, ctx. Unknown tokens are silently ignored. Default is the
+# full set in the historical order so pre-existing behavior is preserved.
+# Bash 3.2 compatible: no here-strings, no arrays.
+line=""
+sep="${C_GREY}│${C_RESET}"
+segments_csv="${CC_STATUSLINE_SEGMENTS:-model,project,git,cost,tokens,ctx}"
+IFS=','
+for s in $segments_csv; do
+  case "$s" in
+    model)   piece="${seg_model:-}" ;;
+    project) piece="${seg_project:-}" ;;
+    git)     piece="${seg_git:-}" ;;
+    cost)    piece="${seg_cost:-}" ;;
+    tokens)  piece="${seg_tokens:-}" ;;
+    ctx)     piece="${seg_ctx:-}" ;;
+    *)       piece="" ;;
+  esac
+  [ -z "$piece" ] && continue
+  if [ -z "$line" ]; then
+    line="$piece"
+  else
+    line="${line} ${sep} ${piece}"
+  fi
+done
+unset IFS
 dbg "render"
 printf '%s\n' "$line"
