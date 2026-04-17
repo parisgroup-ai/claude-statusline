@@ -135,6 +135,7 @@ if [ -n "${cwd:-}" ] && { [ -d "$cwd/.git" ] || git -C "$cwd" rev-parse --is-ins
     else
       g_dirty=""
     fi
+    # shellcheck disable=SC2015  # Best-effort cache write; any failure is intentionally swallowed.
     printf '%s\t%s\t%s\n' "$g_branch" "$g_dirty" "$(date +%s)" > "${git_cache}.tmp" 2>/dev/null && mv "${git_cache}.tmp" "$git_cache" 2>/dev/null || true
   fi
 
@@ -169,6 +170,7 @@ if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcrip
       tok_output=$(printf '%s' "$usage_json" | jq -r '.output_tokens // 0' 2>/dev/null || echo 0)
       tok_cache_read=$(printf '%s' "$usage_json" | jq -r '.cache_read_input_tokens // 0' 2>/dev/null || echo 0)
       tok_cache_creation=$(printf '%s' "$usage_json" | jq -r '.cache_creation_input_tokens // 0' 2>/dev/null || echo 0)
+      # shellcheck disable=SC2015  # Best-effort cache write; any failure is intentionally swallowed.
       printf '{"mtime":%s,"input":%s,"output":%s,"cache_read":%s,"cache_creation":%s}\n' \
         "$trans_mtime" "$tok_input" "$tok_output" "$tok_cache_read" "$tok_cache_creation" \
         > "${trans_cache}.tmp" 2>/dev/null && mv "${trans_cache}.tmp" "$trans_cache" 2>/dev/null || true
