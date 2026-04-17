@@ -20,12 +20,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parisgroup-ai/infra.git",
-    "directory": "packages/claude-statusline"
+    "url": "git+https://github.com/parisgroup-ai/claude-statusline.git"
   },
-  "homepage": "https://github.com/parisgroup-ai/infra/tree/main/packages/claude-statusline#readme",
+  "homepage": "https://github.com/parisgroup-ai/claude-statusline#readme",
   "bugs": {
-    "url": "https://github.com/parisgroup-ai/infra/issues"
+    "url": "https://github.com/parisgroup-ai/claude-statusline/issues"
   },
   "keywords": [
     "claude",

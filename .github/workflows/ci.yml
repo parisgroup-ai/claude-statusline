@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install bash tooling
+        run: sudo apt-get update && sudo apt-get install -y bats shellcheck jq
+
+      - name: Lint (shellcheck)
+        run: npm run lint
+
+      - name: Test (bats)
+        run: npm test
