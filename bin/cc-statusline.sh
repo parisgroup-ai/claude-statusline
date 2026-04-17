@@ -118,7 +118,12 @@ if [ -n "${cwd:-}" ] && { [ -d "$cwd/.git" ] || git -C "$cwd" rev-parse --is-ins
     cache_mtime=$(stat -f %m "$git_cache" 2>/dev/null || echo 0)
     now=$(date +%s)
     if [ $((now - cache_mtime)) -lt 3 ]; then
-      IFS=$'\t' read -r g_branch g_dirty _ < "$git_cache" || true
+      # Use `cut -f` instead of `IFS=$'\t' read` because bash 3.2 collapses
+      # consecutive non-whitespace IFS delimiters, so a clean tree (empty
+      # g_dirty) line 'main\t\t<ts>\n' reads as branch=main, dirty=<ts>,
+      # rendering 'main<ts>' instead of just 'main' (CHORE-008).
+      g_branch="$(cut -f1 < "$git_cache" 2>/dev/null || true)"
+      g_dirty="$(cut -f2 < "$git_cache" 2>/dev/null || true)"
     fi
   fi
 
