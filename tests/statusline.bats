@@ -81,3 +81,31 @@ load 'helpers/setup'
   [[ "$plain" != *"$(basename "$ws")"* ]]
   [[ "$plain" != *"\$"* ]]
 }
+
+@test "case 7: warm git cache reread does not concatenate timestamp into branch (CHORE-008)" {
+  # Repro: clean tree (g_dirty='') writes 'main\t\t<ts>\n' to /tmp/cc-git-*.cache.
+  # bash 3.2 'IFS=$'\t' read -r a b c' collapses consecutive tabs, so the
+  # second invocation reads b=<timestamp> and renders it as the dirty marker:
+  # the statusline shows e.g. 'main1776443258' instead of 'main'.
+  local ws transcript first second plain_first plain_second
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+
+  # First call: cold cache -> recomputes + writes cache file.
+  first="$(render full.json "$ws" "$transcript")"
+  plain_first="$(printf '%s' "$first" | strip_ansi)"
+
+  # Second call within 3s: warm cache -> reread path is exercised.
+  second="$(render full.json "$ws" "$transcript")"
+  plain_second="$(printf '%s' "$second" | strip_ansi)"
+
+  # Sanity: both calls render the branch.
+  [[ "$plain_first" == *"main"* ]]
+  [[ "$plain_second" == *"main"* ]]
+
+  # Bug guard: the rendered branch must not be 'main' immediately followed by
+  # digits (the unix timestamp leaking from the third cache field).
+  # These are the load-bearing assertions.
+  [[ ! "$plain_first" =~ main[0-9] ]]
+  [[ ! "$plain_second" =~ main[0-9] ]]
+}
