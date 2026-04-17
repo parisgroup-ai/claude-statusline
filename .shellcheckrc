@@ -1,0 +1,26 @@
+# Claude Code statusline — shellcheck config
+#
+# Scope: applies to bin/cc-statusline.sh (the published bash entrypoint) and
+# the bats test suite under tests/.
+#
+# Policy:
+#   - Shell dialect is pinned to bash (shebang is `#!/usr/bin/env bash`); the
+#     script targets Bash 3.2+ to stay compatible with stock macOS bash.
+#   - We run shellcheck with its default rule set. No rules are disabled
+#     globally — if a finding is intentional, suppress it *inline* with a
+#     `# shellcheck disable=SCxxxx  <reason>` comment directly above the
+#     offending line, so the justification travels with the code.
+#   - Rules that enforce strict-bash style (SC2292 [[ ]] over [ ], SC2250
+#     ${var} braces, SC2248 quoting, SC2312 masked pipe returns, etc.) are
+#     part of the optional `all` group and are intentionally NOT enabled,
+#     because:
+#       1. The script was originally written as plain POSIX-ish bash 3.2 and
+#          rewriting every `[ ]` as `[[ ]]` is churn without benefit.
+#       2. Turning them on now would mask the defaults-clean baseline that
+#          CI enforces.
+#     If a future contributor wants to opt in locally, run
+#     `shellcheck -o all bin/cc-statusline.sh` explicitly.
+#
+# Keep this file minimal. Add entries only with a justification comment.
+
+shell=bash
