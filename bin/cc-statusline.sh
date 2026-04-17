@@ -108,14 +108,14 @@ fi
 # -------- git segment (with 3s TTL cache B) --------
 seg_git=""
 if [ -n "${cwd:-}" ] && { [ -d "$cwd/.git" ] || git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; }; then
-  cwd_hash="$(printf '%s' "$cwd" | md5 2>/dev/null | cut -c1-8)"
+  cwd_hash="$(printf '%s' "$cwd" | { md5sum 2>/dev/null || md5 2>/dev/null; } | cut -c1-8)"
   git_cache="/tmp/cc-git-${cwd_hash}.cache"
   g_branch=""
   g_dirty=""
 
   # Cache hit: file younger than 3s
   if [ -f "$git_cache" ]; then
-    cache_mtime=$(stat -f %m "$git_cache" 2>/dev/null || echo 0)
+    cache_mtime=$(stat -c %Y "$git_cache" 2>/dev/null || stat -f %m "$git_cache" 2>/dev/null || echo 0)
     now=$(date +%s)
     if [ $((now - cache_mtime)) -lt 3 ]; then
       # Use `cut -f` instead of `IFS=$'\t' read` because bash 3.2 collapses
@@ -149,7 +149,7 @@ dbg "git segment done"
 tok_input=""; tok_output=""; tok_cache_read=0; tok_cache_creation=0
 if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcript_path" ]; then
   trans_cache="/tmp/cc-statusline-${session_id}.json"
-  trans_mtime=$(stat -f %m "$transcript_path" 2>/dev/null || echo 0)
+  trans_mtime=$(stat -c %Y "$transcript_path" 2>/dev/null || stat -f %m "$transcript_path" 2>/dev/null || echo 0)
 
   cache_hit=0
   if [ -f "$trans_cache" ] && jq -e . "$trans_cache" >/dev/null 2>&1; then
@@ -164,7 +164,7 @@ if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcrip
   fi
 
   if [ $cache_hit -eq 0 ]; then
-    usage_json=$(tail -r "$transcript_path" 2>/dev/null | jq -c 'select(.type=="assistant") | .message.usage // empty' 2>/dev/null | head -1 || true)
+    usage_json=$({ tac "$transcript_path" 2>/dev/null || tail -r "$transcript_path" 2>/dev/null; } | jq -c 'select(.type=="assistant") | .message.usage // empty' 2>/dev/null | head -1 || true)
     if [ -n "${usage_json:-}" ]; then
       tok_input=$(printf '%s' "$usage_json" | jq -r '.input_tokens // 0' 2>/dev/null || echo 0)
       tok_output=$(printf '%s' "$usage_json" | jq -r '.output_tokens // 0' 2>/dev/null || echo 0)
