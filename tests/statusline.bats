@@ -64,3 +64,20 @@ load 'helpers/setup'
   [[ "$plain" == *"P "* ]]
   [[ "$plain" == *"git "* ]]
 }
+
+@test "case 6: CC_STATUSLINE_SEGMENTS filters and reorders" {
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(CC_STATUSLINE_SEGMENTS=model,git render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Model + branch still present (sanity)
+  [[ "$plain" == *"Opus"* ]]
+  [[ "$plain" == *"main"* ]]
+  # Only model + git: no project basename, no $ sign (cost dropped).
+  # These must be LAST so they actually fail the test pre-implementation
+  # (bats+bash does not exit on a failing [[ ]] mid-test).
+  [[ "$plain" != *"$(basename "$ws")"* ]]
+  [[ "$plain" != *"\$"* ]]
+}
