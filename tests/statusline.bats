@@ -49,3 +49,18 @@ load 'helpers/setup'
   # ESC byte (0x1b) must not appear
   [[ "$out" != *$'\x1b'* ]]
 }
+
+@test "case 5: CC_STATUSLINE_NO_ICONS uses ASCII fallback" {
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(CC_STATUSLINE_NO_ICONS=1 render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Nerd Font robot U+F544 = EF 95 84 must NOT appear
+  [[ "$out" != *$'\xef\x95\x84'* ]]
+  # ASCII fallbacks MUST appear
+  [[ "$plain" == *"M "* ]]
+  [[ "$plain" == *"P "* ]]
+  [[ "$plain" == *"git "* ]]
+}
