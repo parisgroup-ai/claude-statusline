@@ -1,0 +1,50 @@
+{
+  "name": "@parisgroup-ai/claude-statusline",
+  "version": "0.0.0-semantic-release",
+  "description": "Claude Code statusline — ParisGroup flavor. Renders model, project, git, cost, tokens, and context-window percent.",
+  "bin": {
+    "claude-statusline": "bin/cc-statusline.sh"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prelint": "command -v shellcheck >/dev/null 2>&1 || { echo 'shellcheck not found. Install: brew install shellcheck (macOS) or apt-get install shellcheck (Debian).' >&2; exit 127; }",
+    "lint": "shellcheck bin/cc-statusline.sh",
+    "pretest": "command -v bats >/dev/null 2>&1 || { echo 'bats not found. Install: brew install bats-core (macOS) or apt-get install bats (Debian).' >&2; exit 127; }",
+    "test": "bats tests",
+    "build": "node -e \"console.log('bash package, nothing to build')\"",
+    "type-check": "node -e \"console.log('bash package, nothing to type-check')\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parisgroup-ai/infra.git",
+    "directory": "packages/claude-statusline"
+  },
+  "homepage": "https://github.com/parisgroup-ai/infra/tree/main/packages/claude-statusline#readme",
+  "bugs": {
+    "url": "https://github.com/parisgroup-ai/infra/issues"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "statusline",
+    "anthropic",
+    "bash"
+  ],
+  "author": "Paris Group <hello@parisgroup.ai>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
+}
