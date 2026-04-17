@@ -33,13 +33,25 @@ else
   C_REDBOLD=$'\x1b[1;31m'
 fi
 
-# -------- icons (Nerd Font, literal UTF-8 bytes for bash 3.2 compat) --------
-# U+F544 nf-fa-robot      UTF-8: EF 95 84
-ICON_MODEL=$(printf '\xef\x95\x84')
-# U+F07C nf-fa-folder_open  UTF-8: EF 81 BC
-ICON_PROJECT=$(printf '\xef\x81\xbc')
-# U+E0A0 nf-dev-git_branch  UTF-8: EE 82 A0
-ICON_GIT=$(printf '\xee\x82\xa0')
+# -------- icons (Nerd Font by default; ASCII fallback via CC_STATUSLINE_NO_ICONS=1) --------
+if [ -n "${CC_STATUSLINE_NO_ICONS:-}" ]; then
+  ICON_MODEL="M"
+  ICON_PROJECT="P"
+  ICON_GIT="git"
+  ARROW_UP="^"
+  ARROW_DOWN="v"
+else
+  # U+F544 nf-fa-robot        UTF-8: EF 95 84
+  ICON_MODEL=$(printf '\xef\x95\x84')
+  # U+F07C nf-fa-folder_open  UTF-8: EF 81 BC
+  ICON_PROJECT=$(printf '\xef\x81\xbc')
+  # U+E0A0 nf-dev-git_branch  UTF-8: EE 82 A0
+  ICON_GIT=$(printf '\xee\x82\xa0')
+  # U+2191 up arrow           UTF-8: E2 86 91
+  ARROW_UP=$(printf '\xe2\x86\x91')
+  # U+2193 down arrow         UTF-8: E2 86 93
+  ARROW_DOWN=$(printf '\xe2\x86\x93')
+fi
 
 # -------- dep check --------
 if ! command -v jq >/dev/null 2>&1; then
@@ -199,10 +211,7 @@ seg_cost="${C_GREEN}\$${cost_fmt}${C_RESET}"
 
 tok_render=""
 if [ -n "${tok_input:-}" ]; then
-  # UTF-8: ↑ is E2 86 91, ↓ is E2 86 93
-  arrow_up=$(printf '\xe2\x86\x91')
-  arrow_down=$(printf '\xe2\x86\x93')
-  tok_render="$(fmt_k "$tok_input")${C_YELLOW}${arrow_up}${C_RESET}/$(fmt_k "${tok_output:-0}")${C_CYAN}${arrow_down}${C_RESET}"
+  tok_render="$(fmt_k "$tok_input")${C_YELLOW}${ARROW_UP}${C_RESET}/$(fmt_k "${tok_output:-0}")${C_CYAN}${ARROW_DOWN}${C_RESET}"
 fi
 
 seg_four="$seg_cost"
