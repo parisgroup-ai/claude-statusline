@@ -1,6 +1,6 @@
 {
   "name": "@parisgroup-ai/claude-statusline",
-  "version": "0.0.0-semantic-release",
+  "version": "1.0.0",
   "description": "Claude Code statusline — ParisGroup flavor. Renders model, project, git, cost, tokens, and context-window percent.",
   "bin": {
     "claude-statusline": "bin/cc-statusline.sh"
