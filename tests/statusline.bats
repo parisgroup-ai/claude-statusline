@@ -216,6 +216,31 @@ JSONL
   [[ "$plain" == *"99% ctx"* ]]
 }
 
+@test "case 15: zero-assistant-turns transcript suppresses ↑/↓ segment on BOTH cache miss AND cache hit (issue #3)" {
+  # Transcript with only user messages → no tokens to render.
+  # The first render is a cache miss; suppression has always worked there.
+  # The second render hits the warm cache; suppression must apply there too,
+  # otherwise the cached "0/0" sums leak through as "0↑/0↓" in the display.
+  local ws transcript first second plain_first plain_second
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript_zero_turns)"
+
+  first="$(render full.json "$ws" "$transcript")"
+  plain_first="$(printf '%s' "$first" | strip_ansi)"
+
+  # Same call again — exercises the cache-hit path with a populated cache file.
+  second="$(render full.json "$ws" "$transcript")"
+  plain_second="$(printf '%s' "$second" | strip_ansi)"
+
+  # Sanity: both renders produced model + branch (suppression is scoped to
+  # tokens segment only).
+  [[ "$plain_first" == *"Opus"* ]]
+  [[ "$plain_second" == *"Opus"* ]]
+  # Critical (load-bearing, last): no "0↑" leakage on either path.
+  [[ "$plain_first" != *"0↑"* ]]
+  [[ "$plain_second" != *"0↑"* ]]
+}
+
 @test "case 7: warm git cache reread does not concatenate timestamp into branch (CHORE-008)" {
   # Repro: clean tree (g_dirty='') writes 'main\t\t<ts>\n' to /tmp/cc-git-*.cache.
   # bash 3.2 'IFS=$'\t' read -r a b c' collapses consecutive tabs, so the

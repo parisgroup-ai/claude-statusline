@@ -52,6 +52,17 @@ JSONL
   printf '%s' "$path"
 }
 
+# Write a transcript with NO assistant turns (only user messages).
+# Verifies that the ↑/↓ segment is suppressed, not rendered as "0↑/0↓".
+make_transcript_zero_turns() {
+  local path="${BATS_TEST_TMPDIR}/transcript-zero.jsonl"
+  cat > "$path" <<'JSONL'
+{"type":"user","message":{"role":"user","content":"hi"}}
+{"type":"user","message":{"role":"user","content":"still typing"}}
+JSONL
+  printf '%s' "$path"
+}
+
 # Write a transcript with HIGH cache_read but LOW input — verifies that
 # the display ↑ value EXCLUDES cache_read (issue #2). With cache_read
 # included (the bug), display would show ~4M↑. Excluded (correct), display

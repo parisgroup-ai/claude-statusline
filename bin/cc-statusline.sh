@@ -232,14 +232,18 @@ if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcrip
       disp_up=$(printf '%s' "$computed" | cut -f2 2>/dev/null || echo 0)
       disp_down=$(printf '%s' "$computed" | cut -f3 2>/dev/null || echo 0)
       tok_total_input=$(printf '%s' "$computed" | cut -f4 2>/dev/null || echo 0)
-      # Zero turns (transcript has user messages only) → suppress display.
-      [ "${disp_up:-0}" = "0" ] && [ "${disp_down:-0}" = "0" ] && disp_up=""
       # shellcheck disable=SC2015  # Best-effort cache write; any failure is intentionally swallowed.
       printf '{"mtime":%s,"sum_up":%s,"sum_down":%s,"last_total_input":%s,"cost":%s}\n' \
         "$trans_mtime" "${disp_up:-0}" "${disp_down:-0}" "${tok_total_input:-0}" "${tok_cost:-0}" \
         > "${trans_cache}.tmp" 2>/dev/null && mv "${trans_cache}.tmp" "$trans_cache" 2>/dev/null || true
     fi
   fi
+  # Zero-turns suppression (applied to BOTH cache hit and cache miss paths):
+  # transcript with no assistant turns has sum_up=sum_down=0 → omit segment
+  # entirely instead of rendering the misleading "0↑/0↓". Previously the
+  # check lived inside the cache-miss branch, so warming a cache from a
+  # zero-turn transcript would render "0↑/0↓" on the next call.
+  [ "${disp_up:-0}" = "0" ] && [ "${disp_down:-0}" = "0" ] && disp_up=""
 fi
 # Override stdin's account-scope cost with transcript-scope computed cost
 # whenever the walk produced a value (cache hit OR fresh compute).
