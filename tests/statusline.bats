@@ -82,6 +82,86 @@ load 'helpers/setup'
   [[ "$plain" != *"\$"* ]]
 }
 
+@test "case 8: cost is computed from transcript, NOT from stdin .cost.total_cost_usd (regression #1)" {
+  # The bug: stdin's $.cost.total_cost_usd is account-scope (carries over /clear).
+  # Fix: compute cost from transcript token usage × per-model price table, ignoring stdin.
+  # Setup: stdin says $99.99 (cumulative pre-clear), transcript tokens compute to $0.42.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render stale-cost.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Sanity: render succeeded (model still shows).
+  [[ "$plain" == *"Opus"* ]]
+  # Critical (load-bearing, last): the stale stdin value must NOT leak through,
+  # AND the computed transcript cost must be displayed.
+  [[ "$plain" != *"\$99.99"* ]]
+  [[ "$plain" == *"\$0.42"* ]]
+}
+
+@test "case 9: cost sums across multiple assistant turns" {
+  # Two Opus turns, each producing half of $0.42 → must sum to $0.42.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript_multi_turn)"
+  out="$(render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" == *"Opus"* ]]
+  [[ "$plain" == *"\$0.42"* ]]
+}
+
+@test "case 10: mixed-model transcript applies per-turn pricing" {
+  # Opus turn (10k in, 200 out) + Sonnet turn (10k in, 200 out).
+  # Opus: 10000*15 + 200*75 = 165000. Sonnet: 10000*3 + 200*15 = 33000.
+  # Sum = 198000 / 1M = $0.20 (printf rounds 0.198 → 0.20).
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript_mixed_model)"
+  out="$(render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" == *"Opus"* ]]
+  # If everything were priced as Opus, total would be 330000 / 1M = $0.33.
+  # Sonnet pricing on the second turn brings it down to $0.20 — verifies
+  # that per-turn .message.model is being read.
+  [[ "$plain" != *"\$0.33"* ]]
+  [[ "$plain" == *"\$0.20"* ]]
+}
+
+@test "case 11: transcript cache is invalidated when mtime changes" {
+  # First render writes cache; modifying transcript bumps mtime; second render
+  # must recompute (not reuse stale cache).
+  local ws transcript first second plain_first plain_second
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+
+  first="$(render full.json "$ws" "$transcript")"
+  plain_first="$(printf '%s' "$first" | strip_ansi)"
+  [[ "$plain_first" == *"\$0.42"* ]]
+
+  # Replace transcript with a higher-cost one, bump mtime explicitly to ensure
+  # the OS sees a change even on filesystems with low mtime resolution.
+  cat > "$transcript" <<'JSONL'
+{"type":"user","message":{"role":"user","content":"hi"}}
+{"type":"assistant","message":{"role":"assistant","usage":{"input_tokens":40000,"output_tokens":800,"cache_read_input_tokens":120000,"cache_creation_input_tokens":0}}}
+JSONL
+  # 40000*15 + 800*75 + 120000*1.5 = 600000 + 60000 + 180000 = 840000 / 1M = $0.84
+  # Force a guaranteed mtime bump (1 hour ahead). `touch -t YYYYMMDDHHMM` accepts
+  # the same format on BSD (macOS) and GNU; the date arithmetic differs by flag.
+  local future
+  future=$(date -v+1H +%Y%m%d%H%M 2>/dev/null || date -d '+1 hour' +%Y%m%d%H%M)
+  touch -t "$future" "$transcript"
+
+  second="$(render full.json "$ws" "$transcript")"
+  plain_second="$(printf '%s' "$second" | strip_ansi)"
+
+  # Stale cache would still show $0.42 — load-bearing assertion last.
+  [[ "$plain_second" != *"\$0.42"* ]]
+  [[ "$plain_second" == *"\$0.84"* ]]
+}
+
 @test "case 7: warm git cache reread does not concatenate timestamp into branch (CHORE-008)" {
   # Repro: clean tree (g_dirty='') writes 'main\t\t<ts>\n' to /tmp/cc-git-*.cache.
   # bash 3.2 'IFS=$'\t' read -r a b c' collapses consecutive tabs, so the
