@@ -52,6 +52,21 @@ JSONL
   printf '%s' "$path"
 }
 
+# Write a transcript with HIGH cache_read but LOW input — verifies that
+# the display ↑ value EXCLUDES cache_read (issue #2). With cache_read
+# included (the bug), display would show ~4M↑. Excluded (correct), display
+# should show 200↑ (10 + 90 cache_creation across two turns + 100 input).
+make_transcript_high_cache_read() {
+  local path="${BATS_TEST_TMPDIR}/transcript-cache-heavy.jsonl"
+  cat > "$path" <<'JSONL'
+{"type":"user","message":{"role":"user","content":"hi"}}
+{"type":"assistant","message":{"role":"assistant","model":"claude-opus-4-7","usage":{"input_tokens":50,"output_tokens":1000,"cache_read_input_tokens":2000000,"cache_creation_input_tokens":40}}}
+{"type":"user","message":{"role":"user","content":"more"}}
+{"type":"assistant","message":{"role":"assistant","model":"claude-opus-4-7","usage":{"input_tokens":50,"output_tokens":1000,"cache_read_input_tokens":2000000,"cache_creation_input_tokens":60}}}
+JSONL
+  printf '%s' "$path"
+}
+
 # Write a transcript with mixed models (Opus + Sonnet) — verifies per-turn price.
 # Opus turn: 10000*15 + 200*75 + 0 + 0 = 150000 + 15000 = 165000
 # Sonnet turn: 10000*3 + 200*15 + 0 + 0 = 30000 + 3000 = 33000

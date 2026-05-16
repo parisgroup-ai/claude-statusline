@@ -146,14 +146,25 @@ fi
 dbg "git segment done"
 
 # -------- transcript usage + cost (cache A) --------
-# Transcript walk does TWO things in one pass:
-#   1. Snapshot of last assistant turn → drives ↑/↓ tokens + ctx % display.
-#   2. Cumulative cost across ALL assistant turns, per-model price table →
-#      drives the $cost segment, replacing the buggy stdin .cost.total_cost_usd
-#      which is account-scope (carries over /clear) instead of transcript-scope.
-# Cache file shape (mtime-keyed): {mtime,input,output,cache_read,cache_creation,cost}.
-# Older caches (pre-cost field) silently force a recompute via cache_hit gating.
-tok_input=""; tok_output=""; tok_cache_read=0; tok_cache_creation=0; tok_cost=""
+# Single jq pass over transcript JSONL produces THREE distinct datasets,
+# each scoped to what its consumer needs:
+#   1. Cumulative cost across ALL assistant turns × per-model price table →
+#      drives the $cost segment. Replaces buggy stdin .cost.total_cost_usd
+#      which is account-scope (carries over /clear).
+#   2. Cumulative "new content sent / generated" across ALL turns →
+#      drives the ↑/↓ display. Sums (input_tokens + cache_creation) up,
+#      output_tokens down; deliberately EXCLUDES cache_read because cache
+#      reads are conceptually re-loads of the same prefix and would inflate
+#      the displayed number ~10× without representing new work or new spend.
+#   3. Last-turn snapshot of (input + cache_read + cache_creation) →
+#      drives the ctx% segment. THAT metric IS supposed to reflect total
+#      tokens currently loaded into context, so the inflation is actually
+#      what the display needs there.
+# Cache file shape (mtime-keyed):
+#   {mtime, sum_up, sum_down, last_total_input, cost}
+# Older caches (pre-sum_up, pre-cost) silently force a recompute via the
+# field-presence gate at cache_hit assignment.
+disp_up=""; disp_down=""; tok_total_input=0; tok_cost=""
 if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcript_path" ]; then
   trans_cache="/tmp/cc-statusline-${session_id}.json"
   trans_mtime=$(stat -c %Y "$transcript_path" 2>/dev/null || stat -f %m "$transcript_path" 2>/dev/null || echo 0)
@@ -162,23 +173,23 @@ if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcrip
   if [ -f "$trans_cache" ] && jq -e . "$trans_cache" >/dev/null 2>&1; then
     cached_mtime=$(jq -r '.mtime // 0' "$trans_cache" 2>/dev/null || echo 0)
     if [ "$cached_mtime" = "$trans_mtime" ]; then
-      tok_input=$(jq -r '.input // ""' "$trans_cache" 2>/dev/null || echo "")
-      tok_output=$(jq -r '.output // ""' "$trans_cache" 2>/dev/null || echo "")
-      tok_cache_read=$(jq -r '.cache_read // 0' "$trans_cache" 2>/dev/null || echo 0)
-      tok_cache_creation=$(jq -r '.cache_creation // 0' "$trans_cache" 2>/dev/null || echo 0)
+      disp_up=$(jq -r '.sum_up // ""' "$trans_cache" 2>/dev/null || echo "")
+      disp_down=$(jq -r '.sum_down // ""' "$trans_cache" 2>/dev/null || echo "")
+      tok_total_input=$(jq -r '.last_total_input // 0' "$trans_cache" 2>/dev/null || echo 0)
       tok_cost=$(jq -r '.cost // ""' "$trans_cache" 2>/dev/null || echo "")
-      # Require BOTH input snapshot AND cost — older caches lack `cost` → recompute.
-      [ -n "${tok_input:-}" ] && [ -n "${tok_cost:-}" ] && cache_hit=1
+      # All three required fields present → cache hit. Old caches (before
+      # this commit) have `input/output/cache_read/cache_creation` instead of
+      # `sum_up/sum_down/last_total_input` → disp_up empty → recompute.
+      [ -n "${disp_up:-}" ] && [ -n "${disp_down:-}" ] && [ -n "${tok_cost:-}" ] && cache_hit=1
     fi
   fi
 
   if [ $cache_hit -eq 0 ]; then
     # Single streaming pass via `inputs` (no slurp → bounded memory on long
-    # transcripts). Returns TSV: cost \t last_input \t last_output \t
-    # last_cache_read \t last_cache_creation. Per-turn cost picks model from
-    # `.message.model` (transcripts can mix models within one session).
-    # Default pricing = Opus when model unknown — fail-safe so a brand-new
-    # model id doesn't render $0.00 silently.
+    # transcripts). Returns TSV: cost \t sum_up \t sum_down \t last_total_input.
+    # Per-turn cost picks model from `.message.model` (transcripts can mix
+    # models within one session). Default pricing = Opus when unknown —
+    # fail-safe so a brand-new model id doesn't render $0.00 silently.
     computed=$(jq -nr '
       def pi($m): if $m|test("opus";"i") then 15 elif $m|test("sonnet";"i") then 3 elif $m|test("haiku";"i") then 1 else 15 end;
       def po($m): if $m|test("opus";"i") then 75 elif $m|test("sonnet";"i") then 15 elif $m|test("haiku";"i") then 5 else 75 end;
@@ -186,7 +197,7 @@ if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcrip
       def pcw5($m): if $m|test("opus";"i") then 18.75 elif $m|test("sonnet";"i") then 3.75 elif $m|test("haiku";"i") then 1.25 else 18.75 end;
       def pcw1($m): if $m|test("opus";"i") then 30 elif $m|test("sonnet";"i") then 6 elif $m|test("haiku";"i") then 2 else 30 end;
       reduce (inputs | select(.type=="assistant") | .message) as $a (
-        {c:0, li:0, lo:0, lcr:0, lcc:0};
+        {c:0, su:0, sd:0, lti:0};
         ($a.model // "unknown") as $m
         | ($a.usage // {}) as $u
         | ($u.cache_creation // null) as $cc
@@ -206,26 +217,26 @@ if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcrip
             + (($u.cache_read_input_tokens // 0) * pcr($m))
             + $cw_cost
           ) / 1000000
-        | .li = ($u.input_tokens // 0)
-        | .lo = ($u.output_tokens // 0)
-        | .lcr = ($u.cache_read_input_tokens // 0)
-        | .lcc = $cw_tokens
+        | .su = .su + (($u.input_tokens // 0) + $cw_tokens)
+        | .sd = .sd + ($u.output_tokens // 0)
+        | .lti = (($u.input_tokens // 0)
+                  + ($u.cache_read_input_tokens // 0)
+                  + $cw_tokens)
       )
-      | "\(.c)\t\(.li)\t\(.lo)\t\(.lcr)\t\(.lcc)"
+      | "\(.c)\t\(.su)\t\(.sd)\t\(.lti)"
     ' "$transcript_path" 2>/dev/null || true)
     if [ -n "${computed:-}" ]; then
       # bash-3.2 IFS-safe field split: cut per field (matches the pattern
       # used in the git cache block above for the same reason).
       tok_cost=$(printf '%s' "$computed" | cut -f1 2>/dev/null || echo "")
-      tok_input=$(printf '%s' "$computed" | cut -f2 2>/dev/null || echo 0)
-      tok_output=$(printf '%s' "$computed" | cut -f3 2>/dev/null || echo 0)
-      tok_cache_read=$(printf '%s' "$computed" | cut -f4 2>/dev/null || echo 0)
-      tok_cache_creation=$(printf '%s' "$computed" | cut -f5 2>/dev/null || echo 0)
-      # Empty li/lo (no assistant turns yet) → suppress display by clearing tok_input
-      [ "${tok_input:-0}" = "0" ] && [ "${tok_output:-0}" = "0" ] && tok_input=""
+      disp_up=$(printf '%s' "$computed" | cut -f2 2>/dev/null || echo 0)
+      disp_down=$(printf '%s' "$computed" | cut -f3 2>/dev/null || echo 0)
+      tok_total_input=$(printf '%s' "$computed" | cut -f4 2>/dev/null || echo 0)
+      # Zero turns (transcript has user messages only) → suppress display.
+      [ "${disp_up:-0}" = "0" ] && [ "${disp_down:-0}" = "0" ] && disp_up=""
       # shellcheck disable=SC2015  # Best-effort cache write; any failure is intentionally swallowed.
-      printf '{"mtime":%s,"input":%s,"output":%s,"cache_read":%s,"cache_creation":%s,"cost":%s}\n' \
-        "$trans_mtime" "${tok_input:-0}" "${tok_output:-0}" "${tok_cache_read:-0}" "${tok_cache_creation:-0}" "${tok_cost:-0}" \
+      printf '{"mtime":%s,"sum_up":%s,"sum_down":%s,"last_total_input":%s,"cost":%s}\n' \
+        "$trans_mtime" "${disp_up:-0}" "${disp_down:-0}" "${tok_total_input:-0}" "${tok_cost:-0}" \
         > "${trans_cache}.tmp" 2>/dev/null && mv "${trans_cache}.tmp" "$trans_cache" 2>/dev/null || true
     fi
   fi
@@ -246,9 +257,12 @@ case "${model_display:-}" in
 esac
 
 ctx_pct=""
-if [ -n "${tok_input:-}" ]; then
-  total_input=$(( tok_input + tok_cache_read + tok_cache_creation ))
-  ctx_pct=$(( total_input * 100 / ctx_limit ))
+# tok_total_input is the LAST turn's (input + cache_read + cache_creation),
+# pre-summed by the jq reduce above. Reflects how much of the window is
+# currently loaded — the right scope for ctx %, distinct from the
+# cumulative ↑/↓ display (sum across turns, excludes cache_read).
+if [ "${tok_total_input:-0}" -gt 0 ]; then
+  ctx_pct=$(( tok_total_input * 100 / ctx_limit ))
   [ "$ctx_pct" -gt 99 ] && ctx_pct=99
 fi
 
@@ -277,8 +291,11 @@ cost_fmt=$(printf '%.2f' "${cost_usd:-0}" 2>/dev/null || echo "0.00")
 seg_cost="${C_GREEN}\$${cost_fmt}${C_RESET}"
 
 seg_tokens=""
-if [ -n "${tok_input:-}" ]; then
-  seg_tokens="$(fmt_k "$tok_input")${C_YELLOW}${ARROW_UP}${C_RESET}/$(fmt_k "${tok_output:-0}")${C_CYAN}${ARROW_DOWN}${C_RESET}"
+# disp_up = Σ(input_tokens + cache_creation) across turns; disp_down = Σ(output).
+# Cache reads excluded on purpose — they re-load existing prefix every turn,
+# would inflate this number ~10× without representing new work or new spend.
+if [ -n "${disp_up:-}" ]; then
+  seg_tokens="$(fmt_k "$disp_up")${C_YELLOW}${ARROW_UP}${C_RESET}/$(fmt_k "${disp_down:-0}")${C_CYAN}${ARROW_DOWN}${C_RESET}"
 fi
 
 seg_ctx="${ctx_render:-}"

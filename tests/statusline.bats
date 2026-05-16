@@ -162,6 +162,60 @@ JSONL
   [[ "$plain_second" == *"\$0.84"* ]]
 }
 
+@test "case 12: ↑/↓ display sums tokens across multiple assistant turns (issue #2)" {
+  # Multi-turn fixture: 2 Opus turns × (input=10000, output=200, cache_read=30000).
+  # Cumulative semantics: ↑ = sum(input + cache_creation) = 10000+10000 = 20000 → "20k↑"
+  # Last-turn semantics (the old bug): ↑ would render as "10k↑" (single-turn input).
+  # The 20k vs 10k split is the load-bearing distinction.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript_multi_turn)"
+  out="$(render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Sanity
+  [[ "$plain" == *"Opus"* ]]
+  # Critical: must NOT show last-turn-only (10k↑), must show cumulative (20k↑).
+  [[ "$plain" != *"10k"* ]]
+  [[ "$plain" == *"20k"* ]]
+}
+
+@test "case 13: ↑ display EXCLUDES cache_read across all turns (issue #2)" {
+  # Cache-heavy transcript: 2 turns × cache_read=2,000,000 tokens.
+  # Buggy semantics (sum incl. cache_read): ↑ ≈ 4M → "4M↑" or "4000k↑"
+  # Correct semantics (sum excl. cache_read): ↑ = (50+40) + (50+60) = 200 → "200↑"
+  # Cost is dominated by cache_read at $1.50/M Opus → 2*2M*1.5/1M = $6.00, plus input/output.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript_high_cache_read)"
+  out="$(render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Sanity: render produced a tokens segment.
+  [[ "$plain" == *"↑"* ]]
+  # Critical (last, load-bearing): cache_read leakage would manifest as
+  # millions in the ↑ value. The display must show the small "200" sum.
+  [[ "$plain" != *"4M"* ]]
+  [[ "$plain" != *"M↑"* ]]
+  [[ "$plain" == *"200"*"↑"* ]]
+}
+
+@test "case 14: ctx % uses last-turn total (incl. cache_read), not the cumulative ↑ sum" {
+  # Same cache-heavy fixture: last turn has 50 input + 2M cache_read + 60 cache_creation
+  # = 2,000,110 total. With 1M ctx limit (Opus 4.7), that caps at 99% (clamped).
+  # If ctx % were sourced from disp_up (200), it would render "0% ctx" — wrong.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript_high_cache_read)"
+  out="$(render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Critical (last, load-bearing): ctx % must reflect window pressure (cache_read
+  # IS loaded), not the cumulative-display semantics.
+  [[ "$plain" != *"0% ctx"* ]]
+  [[ "$plain" == *"99% ctx"* ]]
+}
+
 @test "case 7: warm git cache reread does not concatenate timestamp into branch (CHORE-008)" {
   # Repro: clean tree (g_dirty='') writes 'main\t\t<ts>\n' to /tmp/cc-git-*.cache.
   # bash 3.2 'IFS=$'\t' read -r a b c' collapses consecutive tabs, so the
