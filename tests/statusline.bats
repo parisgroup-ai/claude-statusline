@@ -304,7 +304,9 @@ JSONL
   ws="$(make_workspace git)"
   transcript="$(make_transcript)"
   # Blue (\x1b[34m) instead of default cyan (\x1b[36m).
-  out="$(CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' render full.json "$ws" "$transcript")"
+  # TERM=xterm is set explicitly because GitHub Actions defaults to TERM=dumb,
+  # which suppresses all colors (including overrides) by design.
+  out="$(TERM=xterm CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' render full.json "$ws" "$transcript")"
 
   # Custom blue must appear (load-bearing).
   [[ "$out" == *$'\x1b[34m'* ]]
@@ -321,8 +323,10 @@ JSONL
   local ws transcript out
   ws="$(make_workspace git)"
   transcript="$(make_transcript)"
-  # Color overrides are set, but NO_COLOR must zero them out.
-  out="$(NO_COLOR=1 CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' CC_STATUSLINE_COLOR_COST=$'\x1b[35m' render full.json "$ws" "$transcript")"
+  # TERM=xterm forces the "colors are otherwise enabled" branch, so this test
+  # actually exercises NO_COLOR's precedence rather than passing trivially
+  # under CI's default TERM=dumb (which would suppress ANSI anyway).
+  out="$(TERM=xterm NO_COLOR=1 CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' CC_STATUSLINE_COLOR_COST=$'\x1b[35m' render full.json "$ws" "$transcript")"
 
   # No ESC byte anywhere — overrides must be skipped entirely under NO_COLOR.
   [[ "$out" != *$'\x1b'* ]]
@@ -333,13 +337,28 @@ JSONL
   ws="$(make_workspace git)"
   transcript="$(make_transcript)"
   # Magenta (\x1b[35m) on the separator. Default is grey (\x1b[90m).
-  out="$(CC_STATUSLINE_COLOR_SEPARATOR=$'\x1b[35m' render full.json "$ws" "$transcript")"
+  # TERM=xterm — see case 20 rationale.
+  out="$(TERM=xterm CC_STATUSLINE_COLOR_SEPARATOR=$'\x1b[35m' render full.json "$ws" "$transcript")"
 
   # The custom magenta sequence must appear; the default grey must not on
   # the separator. (Grey is used nowhere else by default, so a plain absence
   # check is load-bearing.)
   [[ "$out" == *$'\x1b[35m'* ]]
   [[ "$out" != *$'\x1b[90m'* ]]
+}
+
+@test "case 23: TERM=dumb suppresses color overrides (CI parity)" {
+  local ws transcript out
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  # Symmetric to case 21: when the terminal advertises itself as dumb, any
+  # color override must be silently dropped — same precedence as NO_COLOR.
+  # This codifies the GitHub Actions behavior so future test edits don't
+  # accidentally tighten the gate.
+  out="$(TERM=dumb CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' render full.json "$ws" "$transcript")"
+
+  # No ESC byte under TERM=dumb, even with overrides set.
+  [[ "$out" != *$'\x1b'* ]]
 }
 
 @test "case 7: warm git cache reread does not concatenate timestamp into branch (CHORE-008)" {
