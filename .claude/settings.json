@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "devkit-managed-parisgroup-ai-claude-statusline": {
+      "source": {
+        "source": "file",
+        "path": "/Users/cleitonparis/www/pg/apps/claude-statusline/.claude/devkit/marketplace.json"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "baseline-filtered@devkit-managed-parisgroup-ai-claude-statusline": true
+  }
+}

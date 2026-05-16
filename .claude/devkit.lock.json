@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-16T00:23:43.633Z",
+  "sources": {
+    "pg-baseline": {
+      "version": "0.13.1",
+      "tarball_sha256": ""
+    }
+  },
+  "view": {
+    "assets_hash": "sha256:ce4a1822b9df690ff166176f9ffdfa6d373f977e2faa2f0083c771392b3a695f",
+    "asset_count": {
+      "skills": 10,
+      "commands": 6,
+      "agents": 0,
+      "hooks": 0
+    }
+  }
+}

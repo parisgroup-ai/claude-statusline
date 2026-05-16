@@ -1,0 +1,25 @@
+schema_version: 1
+profile_origin: library-cli
+plugins:
+  - pg-baseline
+assets:
+  skills:
+    - commit-discipline
+    - session-start
+    - session-close
+    - tasknotes-cli
+    - find-skills
+    - context-maintenance
+    - release-maintenance
+    - tag-audit
+    - testing-strategy
+    - api-design
+  commands:
+    - commit
+    - commit-push
+    - session-start
+    - session-close
+    - tn-plan-today
+    - tn-plan-session
+  agents: []
+  hooks: []
