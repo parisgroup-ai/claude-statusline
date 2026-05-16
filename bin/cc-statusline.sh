@@ -51,7 +51,36 @@ else
   ARROW_UP=$(printf '\xe2\x86\x91')
   # U+2193 down arrow         UTF-8: E2 86 93
   ARROW_DOWN=$(printf '\xe2\x86\x93')
+  # Per-icon overrides — only honored when CC_STATUSLINE_NO_ICONS is unset.
+  # No-icons mode wins by design: when the user opts into ASCII fallback they
+  # want a glyph-free render regardless of individual icon settings.
+  [ -n "${CC_STATUSLINE_ICON_MODEL:-}" ]   && ICON_MODEL="$CC_STATUSLINE_ICON_MODEL"
+  [ -n "${CC_STATUSLINE_ICON_PROJECT:-}" ] && ICON_PROJECT="$CC_STATUSLINE_ICON_PROJECT"
+  [ -n "${CC_STATUSLINE_ICON_GIT:-}" ]     && ICON_GIT="$CC_STATUSLINE_ICON_GIT"
 fi
+
+# -------- per-segment theming (color + separator overrides) --------
+# Defaults derive from the C_* primitives resolved by the NO_COLOR block
+# above, so NO_COLOR / TERM=dumb still strips everything to "" — overrides
+# below are gated on color being enabled at all.
+# Override values are passed as RAW ANSI (e.g. $'\x1b[34m'). The script never
+# interprets backslash escapes, so the user's shell must do the decoding.
+SEG_COLOR_MODEL="$C_CYAN"
+SEG_COLOR_PROJECT="$C_MAGENTA"
+SEG_COLOR_GIT="$C_YELLOW"
+SEG_COLOR_COST="$C_GREEN"
+SEG_COLOR_DIRTY="$C_REDBOLD"
+SEG_COLOR_SEPARATOR="$C_GREY"
+if [ "${NO_COLOR+x}" != "x" ] && [ "${TERM:-}" != "dumb" ]; then
+  [ -n "${CC_STATUSLINE_COLOR_MODEL:-}" ]     && SEG_COLOR_MODEL="$CC_STATUSLINE_COLOR_MODEL"
+  [ -n "${CC_STATUSLINE_COLOR_PROJECT:-}" ]   && SEG_COLOR_PROJECT="$CC_STATUSLINE_COLOR_PROJECT"
+  [ -n "${CC_STATUSLINE_COLOR_GIT:-}" ]       && SEG_COLOR_GIT="$CC_STATUSLINE_COLOR_GIT"
+  [ -n "${CC_STATUSLINE_COLOR_COST:-}" ]      && SEG_COLOR_COST="$CC_STATUSLINE_COLOR_COST"
+  [ -n "${CC_STATUSLINE_COLOR_DIRTY:-}" ]     && SEG_COLOR_DIRTY="$CC_STATUSLINE_COLOR_DIRTY"
+  [ -n "${CC_STATUSLINE_COLOR_SEPARATOR:-}" ] && SEG_COLOR_SEPARATOR="$CC_STATUSLINE_COLOR_SEPARATOR"
+fi
+# Separator glyph — independent of color gate; works under NO_COLOR too.
+SEG_SEPARATOR="${CC_STATUSLINE_SEPARATOR:-│}"
 
 # -------- dep check --------
 if ! command -v jq >/dev/null 2>&1; then
@@ -89,7 +118,7 @@ else
   esac
 fi
 
-seg_model="${C_CYAN}${ICON_MODEL}${C_RESET} ${model_label}"
+seg_model="${SEG_COLOR_MODEL}${ICON_MODEL}${C_RESET} ${model_label}"
 
 # -------- project segment --------
 project_base=""
@@ -100,7 +129,7 @@ elif [ -n "${cwd:-}" ]; then
 fi
 
 if [ -n "${project_base:-}" ]; then
-  seg_project="${C_MAGENTA}${ICON_PROJECT}${C_RESET} ${project_base}"
+  seg_project="${SEG_COLOR_PROJECT}${ICON_PROJECT}${C_RESET} ${project_base}"
 else
   seg_project=""
 fi
@@ -140,8 +169,8 @@ if [ -n "${cwd:-}" ] && { [ -d "$cwd/.git" ] || git -C "$cwd" rev-parse --is-ins
   fi
 
   dirty_render=""
-  [ -n "${g_dirty:-}" ] && dirty_render="${C_REDBOLD}${g_dirty}${C_RESET}"
-  seg_git="${C_YELLOW}${ICON_GIT}${C_RESET} ${g_branch}${dirty_render}"
+  [ -n "${g_dirty:-}" ] && dirty_render="${SEG_COLOR_DIRTY}${g_dirty}${C_RESET}"
+  seg_git="${SEG_COLOR_GIT}${ICON_GIT}${C_RESET} ${g_branch}${dirty_render}"
 fi
 dbg "git segment done"
 
@@ -292,7 +321,7 @@ fmt_k() {
 
 # -------- cost / tokens / ctx (three independent segments) --------
 cost_fmt=$(printf '%.2f' "${cost_usd:-0}" 2>/dev/null || echo "0.00")
-seg_cost="${C_GREEN}\$${cost_fmt}${C_RESET}"
+seg_cost="${SEG_COLOR_COST}\$${cost_fmt}${C_RESET}"
 
 seg_tokens=""
 # disp_up = Σ(input_tokens + cache_creation) across turns; disp_down = Σ(output).
@@ -310,7 +339,7 @@ seg_ctx="${ctx_render:-}"
 # full set in the historical order so pre-existing behavior is preserved.
 # Bash 3.2 compatible: no here-strings, no arrays.
 line=""
-sep="${C_GREY}│${C_RESET}"
+sep="${SEG_COLOR_SEPARATOR}${SEG_SEPARATOR}${C_RESET}"
 segments_csv="${CC_STATUSLINE_SEGMENTS:-model,project,git,cost,tokens,ctx}"
 IFS=','
 for s in $segments_csv; do
