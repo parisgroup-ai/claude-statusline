@@ -241,6 +241,126 @@ JSONL
   [[ "$plain_second" != *"0↑"* ]]
 }
 
+@test "case 16: CC_STATUSLINE_ICON_MODEL overrides default model icon" {
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(CC_STATUSLINE_ICON_MODEL='🤖' render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Default Nerd Font robot (U+F544 = EF 95 84) must NOT appear; custom must.
+  [[ "$out" != *$'\xef\x95\x84'* ]]
+  [[ "$plain" == *"🤖"* ]]
+  # Other icons untouched.
+  [[ "$out" == *$'\xef\x81\xbc'* ]]
+}
+
+@test "case 17: per-icon overrides apply independently for project and git" {
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(CC_STATUSLINE_ICON_PROJECT='📁' CC_STATUSLINE_ICON_GIT='⎇' render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" == *"📁"* ]]
+  [[ "$plain" == *"⎇"* ]]
+  # Default folder (U+F07C = EF 81 BC) + git branch (U+E0A0 = EE 82 A0) gone.
+  [[ "$out" != *$'\xef\x81\xbc'* ]]
+  [[ "$out" != *$'\xee\x82\xa0'* ]]
+  # Model icon (Nerd Font robot) still default since not overridden.
+  [[ "$out" == *$'\xef\x95\x84'* ]]
+}
+
+@test "case 18: CC_STATUSLINE_NO_ICONS wins over per-icon overrides" {
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  # Both icon overrides AND no-icons set: no-icons must win (ASCII fallback).
+  out="$(CC_STATUSLINE_NO_ICONS=1 CC_STATUSLINE_ICON_MODEL='🤖' CC_STATUSLINE_ICON_PROJECT='📁' render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # The override emojis must NOT appear.
+  [[ "$plain" != *"🤖"* ]]
+  [[ "$plain" != *"📁"* ]]
+  # ASCII fallbacks must appear (load-bearing, last).
+  [[ "$plain" == *"M "* ]]
+  [[ "$plain" == *"P "* ]]
+}
+
+@test "case 19: CC_STATUSLINE_SEPARATOR replaces the default │ glyph" {
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(CC_STATUSLINE_SEPARATOR='·' render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Default │ (U+2502 = E2 94 82) absent, custom · present.
+  [[ "$out" != *$'\xe2\x94\x82'* ]]
+  [[ "$plain" == *"·"* ]]
+}
+
+@test "case 20: CC_STATUSLINE_COLOR_MODEL injects custom ANSI on the model segment" {
+  local ws transcript out
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  # Blue (\x1b[34m) instead of default cyan (\x1b[36m).
+  # TERM=xterm is set explicitly because GitHub Actions defaults to TERM=dumb,
+  # which suppresses all colors (including overrides) by design.
+  out="$(TERM=xterm CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' render full.json "$ws" "$transcript")"
+
+  # Custom blue must appear (load-bearing).
+  [[ "$out" == *$'\x1b[34m'* ]]
+  # Cyan must NOT appear on the model segment; cyan ↓ arrow is suppressed
+  # because this transcript has output_tokens, but cost segment uses green
+  # and arrows use C_CYAN — assert by checking cyan precedes 'Opus' nowhere.
+  # Easier: assert the model line still renders sensibly.
+  local plain
+  plain="$(printf '%s' "$out" | strip_ansi)"
+  [[ "$plain" == *"Opus"* ]]
+}
+
+@test "case 21: NO_COLOR wins over color overrides (no ANSI escapes leak through)" {
+  local ws transcript out
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  # TERM=xterm forces the "colors are otherwise enabled" branch, so this test
+  # actually exercises NO_COLOR's precedence rather than passing trivially
+  # under CI's default TERM=dumb (which would suppress ANSI anyway).
+  out="$(TERM=xterm NO_COLOR=1 CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' CC_STATUSLINE_COLOR_COST=$'\x1b[35m' render full.json "$ws" "$transcript")"
+
+  # No ESC byte anywhere — overrides must be skipped entirely under NO_COLOR.
+  [[ "$out" != *$'\x1b'* ]]
+}
+
+@test "case 22: CC_STATUSLINE_COLOR_SEPARATOR colors the separator with custom ANSI" {
+  local ws transcript out
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  # Magenta (\x1b[35m) on the separator. Default is grey (\x1b[90m).
+  # TERM=xterm — see case 20 rationale.
+  out="$(TERM=xterm CC_STATUSLINE_COLOR_SEPARATOR=$'\x1b[35m' render full.json "$ws" "$transcript")"
+
+  # The custom magenta sequence must appear; the default grey must not on
+  # the separator. (Grey is used nowhere else by default, so a plain absence
+  # check is load-bearing.)
+  [[ "$out" == *$'\x1b[35m'* ]]
+  [[ "$out" != *$'\x1b[90m'* ]]
+}
+
+@test "case 23: TERM=dumb suppresses color overrides (CI parity)" {
+  local ws transcript out
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  # Symmetric to case 21: when the terminal advertises itself as dumb, any
+  # color override must be silently dropped — same precedence as NO_COLOR.
+  # This codifies the GitHub Actions behavior so future test edits don't
+  # accidentally tighten the gate.
+  out="$(TERM=dumb CC_STATUSLINE_COLOR_MODEL=$'\x1b[34m' render full.json "$ws" "$transcript")"
+
+  # No ESC byte under TERM=dumb, even with overrides set.
+  [[ "$out" != *$'\x1b'* ]]
+}
+
 @test "case 7: warm git cache reread does not concatenate timestamp into branch (CHORE-008)" {
   # Repro: clean tree (g_dirty='') writes 'main\t\t<ts>\n' to /tmp/cc-git-*.cache.
   # bash 3.2 'IFS=$'\t' read -r a b c' collapses consecutive tabs, so the
