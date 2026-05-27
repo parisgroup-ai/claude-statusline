@@ -27,6 +27,7 @@ assets:
     - writing-plans
     - finishing-a-development-branch
     - pg-commit-review
+    - prototype-first
   commands:
     - commit
     - commit-push
