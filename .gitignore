@@ -11,4 +11,5 @@ node_modules/
 .claude/devkit/
 .claude/.claude-plugin/
 .pgdk/.devkit-lock
+.opencode/
 # <<< pg-devkit managed <<<

@@ -1,5 +1,5 @@
 schema_version: 1
-skip_claude_local_view: true  # pg-devkit#121 — usa o pg-baseline global, nao o view per-repo (requer pg-devkit >= 0.72.0)
+skip_claude_local_view: true # pg-devkit#121 — usa o pg-baseline global, nao o view per-repo (requer pg-devkit >= 0.72.0)
 profile_origin: library-cli
 plugins:
   - pg-baseline
@@ -29,6 +29,7 @@ assets:
     - finishing-a-development-branch
     - pg-commit-review
     - prototype-first
+    - goal
   commands:
     - commit
     - commit-push
