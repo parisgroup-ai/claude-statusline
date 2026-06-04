@@ -2,10 +2,6 @@ node_modules/
 *.log
 .DS_Store
 
-# claude-devkit auto-generated view (regenerable from devkit.config.yaml + devkit.lock.json)
-.claude/devkit/staging/
-.claude/devkit/marketplace.json
-
 # >>> pg-devkit managed (regenerable) >>>
 .claude/settings.local.json
 .claude/devkit/
