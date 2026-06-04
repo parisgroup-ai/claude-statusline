@@ -33,7 +33,8 @@ Closes GH #6
 - [x] Green: flip `segments_csv` + `ICON_MODEL` defaults in `bin/cc-statusline.sh`
 - [x] README: hero example, SEGMENTS row, ICON_MODEL row, legacy-layout recipe
 - [x] Verify: 25/25 bats × 3 runs, shellcheck clean, visual smoke ctx-first
-- [ ] Commit + push (direct-to-main) → semantic-release publishes minor
+- [x] Commit `d5b38d0` (direct-to-main)
+- [ ] Push → CI green → semantic-release publishes 1.1.0 → GH #6 auto-closes
 
 ## Notes
 
