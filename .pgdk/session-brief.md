@@ -1,30 +1,42 @@
-# Session Brief — 2026-06-04 (release v1.2.0 + rm-002 hygiene — roadmap zerado)
+# Session Brief — 2026-06-04 (tarde — CHORE-001 fechado, repo em modo manutenção)
 
 ## Last Session Summary
-Sessão de fechamento de ciclo: push dos 4 commits pendentes destravou a release — CI verde, semantic-release publicou **v1.2.0** (não 1.1.0: a 1.1.0 já tinha saído em 2026-05-16; o brief anterior estava com a versão publicada stale), GH #6 auto-fechou, `tn done FEAT-001` + `rm-001` done. Em seguida triei o dirty do devkit (era um `pg-devkit apply` legítimo: pg-baseline 0.38.0→0.55.0, skill `goal` no floor, `.opencode/` no gitignore managed — commitado) e rodei o arco completo `/goal rm-002` (higiene claude-devkit→pg-devkit): varredura mostrou repo quase limpo, única ref real era o bloco legacy do `.gitignore` (removido em `ad6ec3a`), GH #5 fechado com evidência, rm-002 done.
+Sessão curta de fechamento da última pendência: CHORE-001 (smoke da v1.2.0 + sync
+`~/.claude/statusline.sh.real`). Gate de producer real cumprido — `npm pack` do tarball
+publicado v1.2.0, verificado byte-idêntico ao working tree, sync do `.real` feito **a partir do
+tarball** (backup em `~/.claude/statusline.sh.real.bak-2026-06-04`). Smoke com o transcript real
+da sessão (452K jsonl): ctx-first ✓, 🍎 ✓, fallback ASCII (`CC_STATUSLINE_NO_ICONS=1` → `M`) ✓,
+recipe legacy-order ✓, wrapper chain ✓ — e o cost veio do transcript ($22.40) ignorando o stdin
+fake, confirmando o fix per-transcript em produção. Commit `1f81162` pushed, CI + Release verdes.
+Removido também o `.bak` de settings pendente do brief anterior.
 
 ## Current State
-- **Branch**: `main` — sincronizado com origin (tudo pushed)
-- **Last commit**: `cf8d326 chore(roadmap): mark rm-002 done`
+- **Branch**: `main` — sincronizado com origin (0 ahead / 0 behind)
+- **Last commit**: `1f81162 chore(tn): close CHORE-001 - v1.2.0 smoke passed, .real synced`
 - **Published**: **v1.2.0** (verificar sempre via `gh release list --limit 1` — package.json fica em 1.0.0 por design)
-- **Pending changes**: só `.claude/settings.local.json.bak-1780501701` (backup auto do apply de 2026-06-03; operador não confirmou deleção — é seguro apagar)
+- **Pending changes**: nenhum — working tree limpo
 - **Workflow policy**: `direct-to-main`
-- **Roadmap**: rm-001 e rm-002 **done** — zero itens now/next. **Backlog tn**: CHORE-001 (único item)
-- **GH**: 0 issues abertas, 0 PRs
+- **Backlog**: **TUDO zerado** — 0 tn tasks, 0 issues, 0 PRs, roadmap vazio (rm-001/rm-002 done)
 
-## Open Items
-- **CHORE-001** — smoke real da v1.2.0 + sync `~/.claude/statusline.sh.real` (`claude-statusline install` + validar ctx-first + 🍎 + fallback ASCII). Pendente desde 2026-05-15; agora o default mudou, drift visível.
-- **Apagar o `.bak`** de settings (1 comando, decisão do operador).
-- **Roadmap vazio** — próxima sessão é candidata a brainstorm de novo ciclo (`pg-devkit roadmap suggest` deu candidatos fracos hoje: "claude-statusline" 13 commits, "devkit" 4 — nada acionável).
-- **Arc-link**: sem memory-bank neste repo — N/A (convenção rm-007 não se aplica).
+## Achado importante (premissa stale corrigida)
+A live statusline do operador **não é mais** `~/.claude/statusline.sh.real` desde 2026-06-02:
+`settings.json` → `~/.claude/devkit/statusline.sh` (shim do `pg-devkit statusline install
+--rich`) → `statusline-rich.sh` do pg-baseline (7 fragmentos, self-contained, nunca toca o
+`.real`). Operador decidiu **manter o devkit rich como live** (superset: + 🌿 workflow +
+dispatch). Consequência: validação visual de releases deste repo = pipe de stdin JSON direto no
+`bin/cc-statusline.sh`/`.real`, nunca "olhar a statusline da sessão". Registrado no body do
+CHORE-001 e na auto-memory (`statusline-architecture.md`).
 
 ## Decisions Made (don't re-debate)
-- **Bloco legacy do `.gitignore` removido inteiro** (não só a linha de comentário) — as 2 entries eram subsumidas por `.claude/devkit/` no bloco managed; cobertura verificada com `git check-ignore`.
-- **Refs claude-devkit no session-brief e `.opencode/` ficam** — prosa auto-referencial e managed view upstream, respectivamente (registrado no comment do GH #5).
-- **Bump devkit commitado como chore separado** (`5e08d99`) — não misturado com o trabalho de feature.
-- **Decisões anteriores seguem valendo** — per-transcript scope invariant, sem `@semantic-release/git`, package.json em 1.0.0 é intencional.
+- **Devkit rich fica como live statusline** — não repontar settings.json pro claude-statusline puro.
+- **Ritual de sync do `.real`**: sempre via tarball publicado (`npm pack` + verificar
+  tarball==repo), nunca cp direto do working tree.
+- **Decisões anteriores seguem valendo** — per-transcript scope invariant, sem
+  `@semantic-release/git`, package.json em 1.0.0 é intencional.
 
 ## Suggested Next Steps
-1. **CHORE-001** — smoke da v1.2.0 + sync do statusline real (~15 min, fecha pendência de 3 semanas).
-2. **`rm .claude/settings.local.json.bak-1780501701`** — limpeza de 1 comando.
-3. **Brainstorm de roadmap** — repo está com backlog/roadmap zerados; decidir próximo ciclo ou deixar o projeto em manutenção.
+1. **Nada obrigatório** — repo está oficialmente em modo manutenção pós-v1.2.0.
+2. **Brainstorm de novo ciclo** (opcional) — `roadmap suggest` segue com candidatos fracos
+   ("claude-statusline" 13 commits residuais, "devkit" 5); se nada surgir, deixar quieto.
+3. Se surgir bug visual na statusline live do operador → suspeitar primeiro do
+   `statusline-rich.sh` do pg-baseline, não deste repo.
