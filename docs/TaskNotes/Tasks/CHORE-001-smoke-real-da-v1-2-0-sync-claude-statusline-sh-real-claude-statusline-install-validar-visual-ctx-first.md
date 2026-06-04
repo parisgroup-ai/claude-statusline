@@ -1,9 +1,11 @@
 ---
 uid: chore-001
-status: open
+status: done
 priority: normal
 scheduled: 2026-06-04
+completed: 2026-06-04
 pomodoros: 0
+firstStartedAt: 2026-06-04T15:13:29.007807Z
 tags:
 - task
 - chore
@@ -24,9 +26,22 @@ default visual changed, so the drift is visible.
 
 ## Subtasks
 
-- [ ] Install/sync: `claude-statusline install` (updates `~/.claude/statusline.sh.real`)
-- [ ] Smoke in a real session: ctx-first order renders, 🍎 model icon shows,
-      `CC_STATUSLINE_NO_ICONS=1` ASCII fallback (`M`) still works
+- [x] Install/sync: published v1.2.0 tarball (`npm pack`) → `~/.claude/statusline.sh.real`
+      (tarball verified byte-identical to working tree; backup at
+      `~/.claude/statusline.sh.real.bak-2026-06-04`)
+- [x] Smoke with the real live transcript (452K session jsonl): ctx-first order ✓,
+      🍎 model icon ✓, `CC_STATUSLINE_NO_ICONS=1` ASCII fallback (`M`/`P`/`git`/`^`/`v`) ✓,
+      legacy-order env recipe ✓, wrapper chain `statusline.sh → .real` ✓
+
+## Finding (2026-06-04 smoke)
+
+The task premise went stale on 2026-06-02: the operator's LIVE statusline is no
+longer `~/.claude/statusline.sh.real`. `settings.json` points at
+`~/.claude/devkit/statusline.sh` (pg-devkit resolver shim, written by
+`pg-devkit statusline install --rich`), which execs pg-baseline's
+`lib/statusline-rich.sh` — a self-contained 7-fragment script that never touches
+`.real`. The `.real` sync keeps the legacy `~/.claude/statusline.sh → .real`
+chain fresh, but real sessions render the devkit variant.
 
 ## Notes
 
