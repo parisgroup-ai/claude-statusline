@@ -1,10 +1,24 @@
 ---
 uid: feat-001
-status: in-progress
+status: done
 priority: high
 scheduled: 2026-06-04
+completed: 2026-06-04
 pomodoros: 0
 firstStartedAt: 2026-06-04T14:20:53.159580Z
+filesTouched:
+- .pgdk/session-brief.md
+- .tasknotes.toml
+- README.md
+- bin/cc-statusline.sh
+- docs/TaskNotes/Tasks/.gitkeep
+- docs/TaskNotes/Tasks/FEAT-001-ship-rich-layout-as-default-ctx-first-apple-model-icon.md
+- docs/TaskNotes/Tasks/archive/.gitkeep
+- tests/statusline.bats
+commits:
+- 9e7dab6
+- d5b38d0
+- 94b0f0d
 tags:
 - task
 - feat

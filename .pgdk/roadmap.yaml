@@ -1,14 +1,15 @@
-schemaVersion: 2
+schemaVersion: 3
 items:
   - id: rm-001
     title: Rich layout como padrão de fábrica (ctx-first + ícone Apple)
     horizon: now
-    status: idea
+    status: done
     priority: high
     created: 2026-06-02
     links:
       - kind: gh_issue
         url: github.com/parisgroup-ai/claude-statusline#6
+    doneAt: 2026-06-04
   - id: rm-002
     title: Higiene de referências e compatibilidade com o rename pg-devkit
     horizon: next
