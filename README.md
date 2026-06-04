@@ -1,9 +1,9 @@
 # @parisgroup-ai/claude-statusline
 
-Bash-powered statusline for [Claude Code](https://docs.claude.com/en/docs/claude-code/overview). Renders model, project, git branch + dirty flag, cost, token IO, and context-window percentage.
+Bash-powered statusline for [Claude Code](https://docs.claude.com/en/docs/claude-code/overview). Renders context-window percentage, model, project, git branch + dirty flag, cost, and token IO — the **rich layout** (ctx-first + Apple model icon) is the default since v1.1.
 
 ```
- Opus 4.7 1M │  infra │  main* │ $0.42  12k↑/3k↓  6% ctx
+6% ctx │ 🍎 Opus 4.7 1M │  infra │  main* │ $0.42 │ 12k↑/3k↓
 ```
 
 ## Install
@@ -77,15 +77,15 @@ All configuration is via environment variables. Prefix the command in `settings.
 | `TERM` | `dumb` | — | Same as `NO_COLOR`. |
 | `CC_STATUSLINE_DEBUG` | `1` | unset | Append timing markers to `/tmp/cc-statusline.err`. |
 | `CC_STATUSLINE_NO_ICONS` | `1` | unset | Replace Nerd Font icons with ASCII (`M`/`P`/`git`/`^`/`v`). Wins over `CC_STATUSLINE_ICON_*`. |
-| `CC_STATUSLINE_SEGMENTS` | CSV of `model,project,git,cost,tokens,ctx` | all | Reorder/omit segments. Unknown tokens ignored. |
+| `CC_STATUSLINE_SEGMENTS` | CSV of `ctx,model,project,git,cost,tokens` | all (rich order) | Reorder/omit segments. Unknown tokens ignored. Legacy order: `model,project,git,cost,tokens,ctx`. |
 
 ### Theming
 
-Per-segment glyphs, colors, and the separator are overridable. Defaults are unchanged, so omitting these variables keeps the historical look.
+Per-segment glyphs, colors, and the separator are overridable.
 
 | Variable | Default | Notes |
 |---|---|---|
-| `CC_STATUSLINE_ICON_MODEL` | `` (nf-fa-robot) | Any string. Ignored under `CC_STATUSLINE_NO_ICONS=1`. |
+| `CC_STATUSLINE_ICON_MODEL` | `🍎` (U+1F34E) | Any string (legacy robot: `` nf-fa-robot). Ignored under `CC_STATUSLINE_NO_ICONS=1`. |
 | `CC_STATUSLINE_ICON_PROJECT` | `` (nf-fa-folder_open) | Any string. |
 | `CC_STATUSLINE_ICON_GIT` | `` (nf-dev-git_branch) | Any string. |
 | `CC_STATUSLINE_SEPARATOR` | `│` | Glyph between segments. Honored even under `NO_COLOR`. |
@@ -118,6 +118,11 @@ Minimal (model + git only):
 No Nerd Font:
 ```json
 { "command": "CC_STATUSLINE_NO_ICONS=1 claude-statusline" }
+```
+
+Legacy layout (pre-v1.1 — model-first + robot icon):
+```json
+{ "command": "CC_STATUSLINE_SEGMENTS=model,project,git,cost,tokens,ctx CC_STATUSLINE_ICON_MODEL=$'\\xef\\x95\\x84' claude-statusline" }
 ```
 
 Emoji icons + bullet separator:

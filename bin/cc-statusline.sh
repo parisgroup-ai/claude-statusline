@@ -41,8 +41,10 @@ if [ -n "${CC_STATUSLINE_NO_ICONS:-}" ]; then
   ARROW_UP="^"
   ARROW_DOWN="v"
 else
-  # U+F544 nf-fa-robot        UTF-8: EF 95 84
-  ICON_MODEL=$(printf '\xef\x95\x84')
+  # U+1F34E red apple         UTF-8: F0 9F 8D 8E — rich-layout default (GH #6);
+  # legacy robot was U+F544 nf-fa-robot (EF 95 84), restorable via
+  # CC_STATUSLINE_ICON_MODEL.
+  ICON_MODEL=$(printf '\xf0\x9f\x8d\x8e')
   # U+F07C nf-fa-folder_open  UTF-8: EF 81 BC
   ICON_PROJECT=$(printf '\xef\x81\xbc')
   # U+E0A0 nf-dev-git_branch  UTF-8: EE 82 A0
@@ -336,11 +338,13 @@ seg_ctx="${ctx_render:-}"
 # -------- final compose (driven by CC_STATUSLINE_SEGMENTS) --------
 # Comma-separated whitelist+order. Valid tokens: model, project, git,
 # cost, tokens, ctx. Unknown tokens are silently ignored. Default is the
-# full set in the historical order so pre-existing behavior is preserved.
+# rich layout — ctx-first (GH #6), matching pg-devkit's managed install;
+# the legacy order is restorable via
+# CC_STATUSLINE_SEGMENTS=model,project,git,cost,tokens,ctx.
 # Bash 3.2 compatible: no here-strings, no arrays.
 line=""
 sep="${SEG_COLOR_SEPARATOR}${SEG_SEPARATOR}${C_RESET}"
-segments_csv="${CC_STATUSLINE_SEGMENTS:-model,project,git,cost,tokens,ctx}"
+segments_csv="${CC_STATUSLINE_SEGMENTS:-ctx,model,project,git,cost,tokens}"
 IFS=','
 for s in $segments_csv; do
   case "$s" in

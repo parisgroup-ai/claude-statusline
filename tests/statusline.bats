@@ -57,8 +57,8 @@ load 'helpers/setup'
   out="$(CC_STATUSLINE_NO_ICONS=1 render full.json "$ws" "$transcript")"
   plain="$(printf '%s' "$out" | strip_ansi)"
 
-  # Nerd Font robot U+F544 = EF 95 84 must NOT appear
-  [[ "$out" != *$'\xef\x95\x84'* ]]
+  # Default Apple model icon (U+1F34E = F0 9F 8D 8E) must NOT appear
+  [[ "$out" != *$'\xf0\x9f\x8d\x8e'* ]]
   # ASCII fallbacks MUST appear
   [[ "$plain" == *"M "* ]]
   [[ "$plain" == *"P "* ]]
@@ -248,8 +248,8 @@ JSONL
   out="$(CC_STATUSLINE_ICON_MODEL='🤖' render full.json "$ws" "$transcript")"
   plain="$(printf '%s' "$out" | strip_ansi)"
 
-  # Default Nerd Font robot (U+F544 = EF 95 84) must NOT appear; custom must.
-  [[ "$out" != *$'\xef\x95\x84'* ]]
+  # Default Apple icon (U+1F34E = F0 9F 8D 8E) must NOT appear; custom must.
+  [[ "$out" != *$'\xf0\x9f\x8d\x8e'* ]]
   [[ "$plain" == *"🤖"* ]]
   # Other icons untouched.
   [[ "$out" == *$'\xef\x81\xbc'* ]]
@@ -267,8 +267,8 @@ JSONL
   # Default folder (U+F07C = EF 81 BC) + git branch (U+E0A0 = EE 82 A0) gone.
   [[ "$out" != *$'\xef\x81\xbc'* ]]
   [[ "$out" != *$'\xee\x82\xa0'* ]]
-  # Model icon (Nerd Font robot) still default since not overridden.
-  [[ "$out" == *$'\xef\x95\x84'* ]]
+  # Model icon (Apple U+1F34E) still default since not overridden.
+  [[ "$out" == *$'\xf0\x9f\x8d\x8e'* ]]
 }
 
 @test "case 18: CC_STATUSLINE_NO_ICONS wins over per-icon overrides" {
@@ -387,4 +387,35 @@ JSONL
   # These are the load-bearing assertions.
   [[ ! "$plain_first" =~ main[0-9] ]]
   [[ ! "$plain_second" =~ main[0-9] ]]
+}
+
+@test "case 24: default segment order is ctx-first (rich layout, GH #6)" {
+  # The advertised 'rich' layout leads with the context %: the default
+  # CC_STATUSLINE_SEGMENTS must be ctx,model,project,git,cost,tokens.
+  # full.json (Opus 4.7 1M → 1M window) + make_transcript (last-turn total
+  # input = 20000 + 60000 cache_read = 80000) → ctx renders as "8% ctx".
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render full.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  # Sanity: all segments still present.
+  [[ "$plain" == *"Opus"* ]]
+  [[ "$plain" == *"\$0.42"* ]]
+  # Load-bearing (last): the line must START with the ctx segment, not the
+  # model segment — legacy default put ctx last.
+  [[ "$plain" =~ ^[0-9]+%\ ctx ]]
+}
+
+@test "case 25: default model icon is the Apple glyph (rich layout, GH #6)" {
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render full.json "$ws" "$transcript")"
+
+  # Legacy Nerd Font robot (U+F544 = EF 95 84) must NOT appear as default.
+  [[ "$out" != *$'\xef\x95\x84'* ]]
+  # Load-bearing (last): Apple icon (U+1F34E = F0 9F 8D 8E) is the default.
+  [[ "$out" == *$'\xf0\x9f\x8d\x8e'* ]]
 }
