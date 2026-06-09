@@ -108,3 +108,17 @@ strip_ansi() {
   # shellcheck disable=SC2001
   sed -E $'s/\x1b\\[[0-9;]*m//g'
 }
+
+# Write a 2-turn Fable transcript — verifies the fable pricing row (GH #7).
+# Per-turn: 10000*10 + 200*50 + 30000*1 = 100000 + 10000 + 30000 = 140000.
+# Two turns → 280000 / 1M = $0.28.
+make_transcript_fable() {
+  local path="${BATS_TEST_TMPDIR}/transcript-fable.jsonl"
+  cat > "$path" <<'JSONL'
+{"type":"user","message":{"role":"user","content":"hi"}}
+{"type":"assistant","message":{"role":"assistant","model":"claude-fable-5[1m]","usage":{"input_tokens":10000,"output_tokens":200,"cache_read_input_tokens":30000,"cache_creation_input_tokens":0}}}
+{"type":"user","message":{"role":"user","content":"more"}}
+{"type":"assistant","message":{"role":"assistant","model":"claude-fable-5[1m]","usage":{"input_tokens":10000,"output_tokens":200,"cache_read_input_tokens":30000,"cache_creation_input_tokens":0}}}
+JSONL
+  printf '%s' "$path"
+}

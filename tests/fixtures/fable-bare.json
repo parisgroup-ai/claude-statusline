@@ -1,0 +1,10 @@
+{
+  "model": { "id": "claude-fable-5", "display_name": "Fable 5" },
+  "workspace": {
+    "current_dir": "__CWD__",
+    "project_dir": "__CWD__"
+  },
+  "session_id": "test-session-fablebare",
+  "transcript_path": "__TRANSCRIPT__",
+  "cost": { "total_cost_usd": 0.10 }
+}

@@ -419,3 +419,57 @@ JSONL
   # Load-bearing (last): Apple icon (U+1F34E = F0 9F 8D 8E) is the default.
   [[ "$out" == *$'\xf0\x9f\x8d\x8e'* ]]
 }
+
+@test "case 26: [1m] id suffix resolves a 1M window — ctx% not inflated (GH #7)" {
+  # fable-1m.json carries model.id "claude-fable-5[1m]" and display_name
+  # "Fable 5" (NO "1M context" marker). make_transcript last-turn total =
+  # 20000 input + 60000 cache_read = 80000. Against the id-suffix 1M window
+  # that is "8% ctx"; against the legacy 200k default it would be "40% ctx".
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render fable-1m.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" != *"40% ctx"* ]]
+  [[ "$plain" == *"8% ctx"* ]]
+}
+
+@test "case 27: bare fable id falls back to the 1M family default (GH #7)" {
+  # No [..] suffix and no display_name marker — the family table must know
+  # fable is natively 1M instead of falling through to the 200k default.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render fable-bare.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" != *"40% ctx"* ]]
+  [[ "$plain" == *"8% ctx"* ]]
+}
+
+@test "case 28: [200k] id suffix resolves via the k-branch (GH #7)" {
+  # Unknown family ("claude-test-9[200k]") with an explicit k-suffix: the
+  # suffix wins and 80000/200000 renders "40% ctx" — proving the k-branch
+  # parses (and that unknown families with a suffix never mis-resolve).
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render suffix-200k.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" == *"40% ctx"* ]]
+}
+
+@test "case 29: fable transcript turns price at the fable row, not the Opus fallback (GH #7)" {
+  # Two fable turns = $0.28 at 10/50/1 per MTok. The Opus fallback (15/75/1.5)
+  # would price the same usage at $0.42 — the old behavior for unknown models.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript_fable)"
+  out="$(render fable-1m.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" != *"\$0.42"* ]]
+  [[ "$plain" == *"\$0.28"* ]]
+}

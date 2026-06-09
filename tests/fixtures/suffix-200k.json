@@ -1,0 +1,10 @@
+{
+  "model": { "id": "claude-test-9[200k]", "display_name": "Test 9" },
+  "workspace": {
+    "current_dir": "__CWD__",
+    "project_dir": "__CWD__"
+  },
+  "session_id": "test-session-suffix200k",
+  "transcript_path": "__TRANSCRIPT__",
+  "cost": { "total_cost_usd": 0.10 }
+}

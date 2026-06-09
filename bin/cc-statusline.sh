@@ -5,6 +5,12 @@
 # Instead, every expansion of an optional var must use ${VAR:-} defensively.
 trap 'exit 0' ERR INT TERM
 
+# Locale-independent rendering (GH #7): bash printf '%.2f' both PARSES its
+# argument and FORMATS its output per LC_NUMERIC — under a comma-decimal
+# locale (pt_BR, de_DE, ...) the jq-computed "0.28" mangles into garbage like
+# "$0,000.00". The statusline must render identically on every machine.
+export LC_ALL=C
+
 # -------- debug timing (opt-in via CC_STATUSLINE_DEBUG=1) --------
 if [ -n "${CC_STATUSLINE_DEBUG:-}" ]; then
   DBG_START=$(date +%s 2>/dev/null || echo 0)
@@ -94,6 +100,7 @@ fi
 stdin_json="$(cat 2>/dev/null || true)"
 
 model_display=""
+model_id=""
 cwd=""
 project_dir=""
 session_id=""
@@ -102,6 +109,7 @@ cost_usd="0"
 
 if [ -n "${stdin_json:-}" ]; then
   model_display="$(printf '%s' "$stdin_json" | jq -r '.model.display_name // ""' 2>/dev/null || true)"
+  model_id="$(printf '%s' "$stdin_json" | jq -r '.model.id // ""' 2>/dev/null || true)"
   cwd="$(printf '%s' "$stdin_json" | jq -r '.workspace.current_dir // ""' 2>/dev/null || true)"
   project_dir="$(printf '%s' "$stdin_json" | jq -r '.workspace.project_dir // ""' 2>/dev/null || true)"
   session_id="$(printf '%s' "$stdin_json" | jq -r '.session_id // ""' 2>/dev/null || true)"
@@ -222,11 +230,11 @@ if [ -n "${session_id:-}" ] && [ -n "${transcript_path:-}" ] && [ -f "$transcrip
     # models within one session). Default pricing = Opus when unknown —
     # fail-safe so a brand-new model id doesn't render $0.00 silently.
     computed=$(jq -nr '
-      def pi($m): if $m|test("opus";"i") then 15 elif $m|test("sonnet";"i") then 3 elif $m|test("haiku";"i") then 1 else 15 end;
-      def po($m): if $m|test("opus";"i") then 75 elif $m|test("sonnet";"i") then 15 elif $m|test("haiku";"i") then 5 else 75 end;
-      def pcr($m): if $m|test("opus";"i") then 1.5 elif $m|test("sonnet";"i") then 0.3 elif $m|test("haiku";"i") then 0.1 else 1.5 end;
-      def pcw5($m): if $m|test("opus";"i") then 18.75 elif $m|test("sonnet";"i") then 3.75 elif $m|test("haiku";"i") then 1.25 else 18.75 end;
-      def pcw1($m): if $m|test("opus";"i") then 30 elif $m|test("sonnet";"i") then 6 elif $m|test("haiku";"i") then 2 else 30 end;
+      def pi($m): if $m|test("fable";"i") then 10 elif $m|test("opus";"i") then 15 elif $m|test("sonnet";"i") then 3 elif $m|test("haiku";"i") then 1 else 15 end;
+      def po($m): if $m|test("fable";"i") then 50 elif $m|test("opus";"i") then 75 elif $m|test("sonnet";"i") then 15 elif $m|test("haiku";"i") then 5 else 75 end;
+      def pcr($m): if $m|test("fable";"i") then 1 elif $m|test("opus";"i") then 1.5 elif $m|test("sonnet";"i") then 0.3 elif $m|test("haiku";"i") then 0.1 else 1.5 end;
+      def pcw5($m): if $m|test("fable";"i") then 12.5 elif $m|test("opus";"i") then 18.75 elif $m|test("sonnet";"i") then 3.75 elif $m|test("haiku";"i") then 1.25 else 18.75 end;
+      def pcw1($m): if $m|test("fable";"i") then 20 elif $m|test("opus";"i") then 30 elif $m|test("sonnet";"i") then 6 elif $m|test("haiku";"i") then 2 else 30 end;
       reduce (inputs | select(.type=="assistant") | .message) as $a (
         {c:0, su:0, sd:0, lti:0};
         ($a.model // "unknown") as $m
@@ -286,10 +294,39 @@ fi
 dbg "transcript done"
 
 # -------- context window % --------
-ctx_limit=200000
-case "${model_display:-}" in
-  *"1M context"*|*"1M)"*) ctx_limit=1000000 ;;
+# Resolution order (GH #7): explicit [<n>m]/[<n>k] window suffix on model.id
+# wins → display_name "1M context" marker → family default (Fable is natively
+# 1M) → 200k legacy default. Newer Claude Code ids encode the window in a
+# bracket suffix (e.g. "claude-fable-5[1m]") with no display_name marker —
+# the old display-name-only check rendered pct ~5× inflated against 200k.
+ctx_limit=0
+case "${model_id:-}" in
+  *\[*m\])
+    win="${model_id##*\[}"; win="${win%m]}"
+    case "$win" in
+      ''|*[!0-9]*) ;;
+      *) ctx_limit=$(( win * 1000000 )) ;;
+    esac
+    ;;
+  *\[*k\])
+    win="${model_id##*\[}"; win="${win%k]}"
+    case "$win" in
+      ''|*[!0-9]*) ;;
+      *) ctx_limit=$(( win * 1000 )) ;;
+    esac
+    ;;
 esac
+if [ "$ctx_limit" -eq 0 ]; then
+  case "${model_display:-}" in
+    *"1M context"*|*"1M)"*) ctx_limit=1000000 ;;
+  esac
+fi
+if [ "$ctx_limit" -eq 0 ]; then
+  case "${model_id:-}:${model_display:-}" in
+    *[Ff]able*) ctx_limit=1000000 ;;
+    *)          ctx_limit=200000 ;;
+  esac
+fi
 
 ctx_pct=""
 # tok_total_input is the LAST turn's (input + cache_read + cache_creation),
