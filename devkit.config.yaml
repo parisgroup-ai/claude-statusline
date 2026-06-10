@@ -30,6 +30,7 @@ assets:
     - pg-commit-review
     - prototype-first
     - goal
+    - context-discipline
   commands:
     - commit
     - commit-push
