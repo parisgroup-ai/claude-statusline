@@ -1,0 +1,17 @@
+{
+  "model": { "id": "claude-fable-5[1m]", "display_name": "Fable 5" },
+  "workspace": {
+    "current_dir": "__CWD__",
+    "project_dir": "__CWD__"
+  },
+  "session_id": "test-session-ctxstdin",
+  "transcript_path": "__TRANSCRIPT__",
+  "context_window": {
+    "total_input_tokens": 179000,
+    "total_output_tokens": 1200,
+    "context_window_size": 1000000,
+    "used_percentage": 17.9,
+    "remaining_percentage": 82.1
+  },
+  "cost": { "total_cost_usd": 0.10 }
+}

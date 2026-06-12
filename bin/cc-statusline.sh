@@ -106,10 +106,15 @@ project_dir=""
 session_id=""
 transcript_path=""
 cost_usd="0"
+ctx_used_pct=""
 
 if [ -n "${stdin_json:-}" ]; then
   model_display="$(printf '%s' "$stdin_json" | jq -r '.model.display_name // ""' 2>/dev/null || true)"
   model_id="$(printf '%s' "$stdin_json" | jq -r '.model.id // ""' 2>/dev/null || true)"
+  # Harness-computed context usage (GH #8). Floor to an int for display;
+  # anything non-numeric (absent block, null before the first API response)
+  # collapses to "" so the transcript fallback below kicks in.
+  ctx_used_pct="$(printf '%s' "$stdin_json" | jq -r '(.context_window.used_percentage // "") | if type == "number" then floor else "" end' 2>/dev/null || true)"
   cwd="$(printf '%s' "$stdin_json" | jq -r '.workspace.current_dir // ""' 2>/dev/null || true)"
   project_dir="$(printf '%s' "$stdin_json" | jq -r '.workspace.project_dir // ""' 2>/dev/null || true)"
   session_id="$(printf '%s' "$stdin_json" | jq -r '.session_id // ""' 2>/dev/null || true)"
@@ -294,48 +299,60 @@ fi
 dbg "transcript done"
 
 # -------- context window % --------
-# Resolution order (GH #7): explicit [<n>m]/[<n>k] window suffix on model.id
-# wins → display_name "1M context" marker → family default (Fable is natively
-# 1M) → 200k legacy default. Newer Claude Code ids encode the window in a
-# bracket suffix (e.g. "claude-fable-5[1m]") with no display_name marker —
-# the old display-name-only check rendered pct ~5× inflated against 200k.
-ctx_limit=0
-case "${model_id:-}" in
-  *\[*m\])
-    win="${model_id##*\[}"; win="${win%m]}"
-    case "$win" in
-      ''|*[!0-9]*) ;;
-      *) ctx_limit=$(( win * 1000000 )) ;;
-    esac
-    ;;
-  *\[*k\])
-    win="${model_id##*\[}"; win="${win%k]}"
-    case "$win" in
-      ''|*[!0-9]*) ;;
-      *) ctx_limit=$(( win * 1000 )) ;;
-    esac
-    ;;
-esac
-if [ "$ctx_limit" -eq 0 ]; then
-  case "${model_display:-}" in
-    *"1M context"*|*"1M)"*) ctx_limit=1000000 ;;
-  esac
-fi
-if [ "$ctx_limit" -eq 0 ]; then
-  case "${model_id:-}:${model_display:-}" in
-    *[Ff]able*) ctx_limit=1000000 ;;
-    *)          ctx_limit=200000 ;;
-  esac
-fi
-
+# Primary source (GH #8): the harness sends .context_window.used_percentage on
+# stdin — authoritative, since Claude Code knows the session's real window
+# size and accounts for compaction. When present (parsed above), it wins;
+# no model-id heuristic can drift from it.
+# Fallback (older Claude Code, fixtures without the block): estimate from the
+# transcript's last turn against a limit resolved from the model id/name.
 ctx_pct=""
-# tok_total_input is the LAST turn's (input + cache_read + cache_creation),
-# pre-summed by the jq reduce above. Reflects how much of the window is
-# currently loaded — the right scope for ctx %, distinct from the
-# cumulative ↑/↓ display (sum across turns, excludes cache_read).
-if [ "${tok_total_input:-0}" -gt 0 ]; then
+if [ -n "${ctx_used_pct:-}" ]; then
+  ctx_pct="$ctx_used_pct"
+elif [ "${tok_total_input:-0}" -gt 0 ]; then
+  # Resolution order (GH #7): explicit [<n>m]/[<n>k] window suffix on model.id
+  # wins → display_name "1M context" marker → family default (Fable is natively
+  # 1M) → 200k legacy default. Newer Claude Code ids encode the window in a
+  # bracket suffix (e.g. "claude-fable-5[1m]") with no display_name marker —
+  # the old display-name-only check rendered pct ~5× inflated against 200k.
+  ctx_limit=0
+  case "${model_id:-}" in
+    *\[*m\])
+      win="${model_id##*\[}"; win="${win%m]}"
+      case "$win" in
+        ''|*[!0-9]*) ;;
+        *) ctx_limit=$(( win * 1000000 )) ;;
+      esac
+      ;;
+    *\[*k\])
+      win="${model_id##*\[}"; win="${win%k]}"
+      case "$win" in
+        ''|*[!0-9]*) ;;
+        *) ctx_limit=$(( win * 1000 )) ;;
+      esac
+      ;;
+  esac
+  if [ "$ctx_limit" -eq 0 ]; then
+    case "${model_display:-}" in
+      *"1M context"*|*"1M)"*) ctx_limit=1000000 ;;
+    esac
+  fi
+  if [ "$ctx_limit" -eq 0 ]; then
+    case "${model_id:-}:${model_display:-}" in
+      *[Ff]able*) ctx_limit=1000000 ;;
+      *)          ctx_limit=200000 ;;
+    esac
+  fi
+
+  # tok_total_input is the LAST turn's (input + cache_read + cache_creation),
+  # pre-summed by the jq reduce above. Reflects how much of the window is
+  # currently loaded — the right scope for ctx %, distinct from the
+  # cumulative ↑/↓ display (sum across turns, excludes cache_read).
   ctx_pct=$(( tok_total_input * 100 / ctx_limit ))
-  [ "$ctx_pct" -gt 99 ] && ctx_pct=99
+fi
+# Clamp for display width: the estimate can exceed 100 via cache_read
+# inflation, and the harness value can legitimately reach 100.
+if [ -n "${ctx_pct:-}" ] && [ "$ctx_pct" -gt 99 ]; then
+  ctx_pct=99
 fi
 
 if [ -n "${ctx_pct:-}" ]; then
