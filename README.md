@@ -58,6 +58,15 @@ This package lives on the GitHub Packages registry. Create a `.npmrc` in your ho
 | `git` | no | Git segment is skipped if git is missing or cwd is outside a repo. |
 | Nerd Font | recommended | See `CC_STATUSLINE_NO_ICONS` to opt out. |
 
+## Context-window %
+
+The `ctx` segment prefers the harness-computed `context_window.used_percentage`
+from statusline stdin — Claude Code knows the session's real window size and
+accounts for compaction. On older Claude Code versions that don't send the
+block, it falls back to a transcript-based estimate against a window limit
+resolved from the model id/name (`[1m]`/`[200k]` id suffix → display-name
+`1M context` marker → family default → 200k).
+
 ## Configuration
 
 All configuration is via environment variables. Prefix the command in `settings.json`:

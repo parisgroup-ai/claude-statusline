@@ -473,3 +473,34 @@ JSONL
   [[ "$plain" != *"\$0.42"* ]]
   [[ "$plain" == *"\$0.28"* ]]
 }
+
+@test "case 30: stdin context_window.used_percentage overrides the transcript estimate (GH #8)" {
+  # ctx-stdin.json carries .context_window.used_percentage = 17.9 (harness
+  # value, floors to 17). The transcript estimate for this fixture would be
+  # "8% ctx" (80000 last-turn total against the [1m] 1M window) — when the
+  # harness block is present it must win, since it accounts for compaction
+  # and the real window size without any model-id parsing.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render ctx-stdin.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" != *"8% ctx"* ]]
+  [[ "$plain" == *"17% ctx"* ]]
+}
+
+@test "case 31: explicit used_percentage 0 renders 0% ctx, not the transcript estimate (GH #8)" {
+  # Zero from the harness is data, not absence: ctx-stdin-zero.json says
+  # used_percentage = 0 while the transcript would estimate "8% ctx". The
+  # empty-vs-zero distinction is load-bearing — '[ -n "$ctx_used_pct" ]'
+  # must treat "0" as present.
+  local ws transcript out plain
+  ws="$(make_workspace git)"
+  transcript="$(make_transcript)"
+  out="$(render ctx-stdin-zero.json "$ws" "$transcript")"
+  plain="$(printf '%s' "$out" | strip_ansi)"
+
+  [[ "$plain" != *"8% ctx"* ]]
+  [[ "$plain" == *"0% ctx"* ]]
+}
