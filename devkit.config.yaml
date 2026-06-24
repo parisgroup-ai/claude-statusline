@@ -31,6 +31,8 @@ assets:
     - prototype-first
     - goal
     - context-discipline
+    - linguagem-simples
+    - repoguardian
   commands:
     - commit
     - commit-push
