@@ -8,4 +8,5 @@ node_modules/
 .claude/.claude-plugin/
 .pgdk/.devkit-lock
 .opencode/
+.grok/
 # <<< pg-devkit managed <<<
