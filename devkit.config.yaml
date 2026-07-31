@@ -33,6 +33,10 @@ assets:
     - context-discipline
     - linguagem-simples
     - repoguardian
+    - qa
+    - eval
+    - pg-yagni
+    - capture-lesson
   commands:
     - commit
     - commit-push
