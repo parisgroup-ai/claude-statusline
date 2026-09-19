@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "name": "repo-evals",
+  "name": "claude-statusline-evals",
   "runner": "bash evals/run.sh",
   "cases": "cases/*.json",
   "contractOwner": "pg-platform/ai-runtime"
