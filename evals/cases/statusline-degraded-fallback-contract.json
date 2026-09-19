@@ -1,0 +1,31 @@
+{
+  "id": "statusline-degraded-fallback-contract",
+  "input": {
+    "stdin": {},
+    "env": {
+      "NO_COLOR": "1",
+      "CC_STATUSLINE_NO_ICONS": "1"
+    }
+  },
+  "expected": {
+    "exitCode": 0,
+    "contains": [
+      "Claude Code",
+      "$0.00"
+    ],
+    "doesNotContain": [
+      "null",
+      "NaN",
+      "undefined"
+    ]
+  },
+  "tags": [
+    "contract",
+    "resilience",
+    "fallback"
+  ],
+  "metadata": {
+    "domain": "statusline-fallback",
+    "contract": "degraded-payload"
+  }
+}
