@@ -7,6 +7,8 @@ node_modules/
 .claude/devkit/
 .claude/.claude-plugin/
 .pgdk/.devkit-lock
+.pgdk/.start-cache.json
 .opencode/
 .grok/
+.kimi-code/
 # <<< pg-devkit managed <<<

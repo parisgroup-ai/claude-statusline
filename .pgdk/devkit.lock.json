@@ -1,16 +1,16 @@
 {
   "schema_version": 3,
-  "generated_at": "2026-09-13T16:32:51.562Z",
+  "generated_at": "2026-09-21T10:41:01.270Z",
   "sources": {
     "pg-baseline": {
-      "version": "0.169.0",
+      "version": "0.177.0",
       "tarball_sha256": ""
     }
   },
   "view": {
-    "assets_hash": "sha256:b69de585a1c58b2ae07fd9408af4b39a8c067ee1e4423cdf115039e9bcb036c7",
+    "assets_hash": "sha256:922a6db4947ef0c01e9fe2ea145ed090b8f78759261e81ad239c5de989079083",
     "asset_count": {
-      "skills": 34,
+      "skills": 35,
       "commands": 6,
       "agents": 0,
       "hooks": 0
@@ -21,503 +21,494 @@
       "skills": {
         "commit-discipline": {
           "hash": "sha256:21804cc1c11d4404b759e2705cededb99b4bb0315e045fa27c9943af8918e41b",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "session-start": {
-          "hash": "sha256:86750ba2c6fc9fa1423bfdf625e57769dc379cd9d9fa18cfc8ceae2670aa2f1f",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:fefdce820d446724b101b06f86bdd1f2c70e6dbaa250f9e7ffce997e1ba15cc7",
+          "source": "pg-baseline@0.177.0"
         },
         "session-close": {
-          "hash": "sha256:19d27d4c505a4407d14972a7ffb7bf3716b6eb4362aa5bbb82f5e151dafe45fb",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:3f910f4fa099c9e2a38b7bc261948642074b98ca3534bd16f3fec537fe7110c4",
+          "source": "pg-baseline@0.177.0"
         },
         "tasknotes-cli": {
           "hash": "sha256:6da03e210c7281ece30b7ad744f61ae6caa852b32a5178568e493bf217218dae",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "find-skills": {
           "hash": "sha256:ab9a9a1aec17c73ded704b7d51e3c069dc8679192373d582c180256078dfbcbb",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "context-maintenance": {
           "hash": "sha256:52cc4a684847aca7f2b2c5c7f8cc84a019939d513ca40fd3ebaf5569e159956e",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "release-maintenance": {
           "hash": "sha256:03d9552da9014eb0213a9c0946abeb7c7c9605c064a544dac31f1339d70da360",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "tag-audit": {
           "hash": "sha256:29126e6af4aa91d1913cbd1fb68e3e406cbb63f4c663ccecad17fa2523091c65",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "testing-strategy": {
           "hash": "sha256:64a5bc18a3a631e0fffa42e58a2e5888a36f20c0343b3bee8b2d9956f12f76a1",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "api-design": {
           "hash": "sha256:e945bcba29c5502acceb9f389141358f650501192bfbaa77275018b1069d9545",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "agents-maintenance": {
           "hash": "sha256:53fbc011efe55857782ae2bdbe11bf1d94ae300e5bc948edfe118e281d48e277",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "memory-bank": {
           "hash": "sha256:bd827c9f9c4a26b9533a4919f7a760b34512489e423ffabf00667c20272a06ec",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "context-architecture-audit": {
           "hash": "sha256:3d9f19539f8148ce6296b333f87001856cdfe53d91d1e31d8d71bd4585c3bb42",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "reviewer": {
-          "hash": "sha256:b9ee83e445b8c3f9549ef89cfac194df95379ce0aca0d0da19a5407a96be43eb",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:16aaaa33b7ff2974ab5c16f26fab92f0978447c9dd90a52859d0436f5f3f2ca5",
+          "source": "pg-baseline@0.177.0"
         },
         "brainstorming": {
-          "hash": "sha256:60ba93562e30f4438274c38eb5bca9f746ae3c7f528a96d81f84034a7672f9c3",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:a088dfa9a6b24c2cf0e002cd6c29a48fb15cb94aadf463679a2ba5e36d39b69e",
+          "source": "pg-baseline@0.177.0"
         },
         "executing-plans": {
           "hash": "sha256:5e5a6ed3ff0a2364c3e8ba9f5238c6df0b61acfcae7fd24c8178df7d1bed8a51",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "subagent-driven-development": {
-          "hash": "sha256:ade1fad5eb08880d7163d219efcd19b0599a35f87be1b87173d8f1ecb09178e0",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:b3d1020ddf224d372e6fcb081aa4cc81b63cf7b6664471b7e447f636a2ce5a6f",
+          "source": "pg-baseline@0.177.0"
         },
         "systematic-debugging": {
-          "hash": "sha256:e4ec6fbe5219b3953bd4a568acf667dcd4794fb16b6ebeb4bc2eb48f7783cc64",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:792dd363e8a4fbeaf3b9a67a0b1a12ae918a9e64ee0f743f1f61802bef340b01",
+          "source": "pg-baseline@0.177.0"
         },
         "test-driven-development": {
           "hash": "sha256:d36dc093fe6ab9019a7fe56d44a61a0a6b982489a64f8381dfd5d5706e5b0180",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "verification-before-completion": {
           "hash": "sha256:b0b43fbdbb8fc26fc5d9751b54bcf2737983aaadbef317481b15e08e770c6918",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "writing-plans": {
           "hash": "sha256:d7468e32da4a7f4c55e48ab8480e122a5c49609717ee3343c4bbcd4a2dc37007",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "finishing-a-development-branch": {
           "hash": "sha256:e09ef9281165420e0b36ac24b94490387553f6032f5c04bb5c5974856db15dda",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "pg-commit-review": {
           "hash": "sha256:65080fc93a21566909a5a8af8cb009863ed36816b6d92616aaa15c61718c8e78",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "prototype-first": {
           "hash": "sha256:819910ce098c2f704cd3c098519e124a4f4bd5a90d879d9f13554d707b6da3a6",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "goal": {
-          "hash": "sha256:67017cea69ae0e4151e8a10bcbee8d2da84d46e932d766b327c14ea35614c059",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:312673d736c2fde6a25aea76b5ca619e104cb6322e2645c709026ddb9d4c95e9",
+          "source": "pg-baseline@0.177.0"
         },
         "context-discipline": {
           "hash": "sha256:93c7335074155da3dc51dba3fbffe68b4575020cc90307f930128e986104e914",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "linguagem-simples": {
           "hash": "sha256:37be4ab26abcc91107268f8c0499935d40f8102b2c63dd8dfeac160b88e927ac",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "repoguardian": {
           "hash": "sha256:0409c72054fcc7fc9515b9a51bd3220e087be73e4394f2d84a543c5dfc5d3143",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "qa": {
           "hash": "sha256:342b463543a94f2f7ec5b85dcbe096a87667eef45a940e9059499d2621544d69",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "eval": {
           "hash": "sha256:f504b0be1b5d3c3e485161b340f28dcdcef86f49e41e86b8cfe1f138b9f1b45f",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "pg-yagni": {
           "hash": "sha256:c8b1ecc4c399a56576d1afcf6032aa3ca2baf73ef4e695bc9a2912486e3455c8",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "capture-lesson": {
           "hash": "sha256:a43f0238bcb8029a78357401c27f426d3f8056a37b3f27a028752c1792f46a5f",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "package-adopt": {
-          "hash": "sha256:214aa2c25fa5033c435aab6782afa1d90da96635332b6ffb6493afbf88bf5ea8",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:06758610ccb54b830fb070e2dd6cdb0e687338cd1c154aecfaf14eeb4524d8b1",
+          "source": "pg-baseline@0.177.0"
         },
         "resolve-work": {
-          "hash": "sha256:563fbddf46e4d58e76610c200d9e19f93e2dc50056f182254351d51f47d05781",
-          "source": "pg-baseline@0.169.0"
-        }
-      }
-    },
-    "antigravity": {
-      "skills": {},
-      "commands": {
-        "commit": {
-          "hash": "sha256:b8251b9ba8a4539127cf1375eec9faf5b93aec5143fc3de977f2fd41f265e639",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:62b46db108668899e9be9785bb268471a92090a8c7d303086ab74564d7050037",
+          "source": "pg-baseline@0.177.0"
         },
-        "commit-push": {
-          "hash": "sha256:9da07d27d9f788f88aa6e12d5fd2bdda3a4be4541a530d97c13d0193e9f126e0",
-          "source": "pg-baseline@0.169.0"
-        },
-        "tn-plan-today": {
-          "hash": "sha256:7da34a7872aba69c3e7aa0b3b5d9f80b9c1e3bd3e9519af36cbba6b2c831f76e",
-          "source": "pg-baseline@0.169.0"
-        },
-        "tn-plan-session": {
-          "hash": "sha256:35ef5ee84803d250ba233f6954eb1c51a55b9489f9c615b834b24afcf48336be",
-          "source": "pg-baseline@0.169.0"
+        "obsolete-test-repair": {
+          "hash": "sha256:5757841c554ab7c708d6f8ce707c39ed107e25c1e1e9fd61b897ee8b25383b76",
+          "source": "pg-baseline@0.177.0"
         }
       }
     },
     "grok": {
       "pluginDir": ".grok/plugins/pgdk-claude-statusline",
-      "pluginHash": "sha256:92ba6105ed7115057ed2c3cd61ba70e0314026db557df745377fa7b64f0b15f8",
+      "pluginHash": "sha256:444e67223f9406ced9ad37fb075fe15d15e9fc1fbfe5b8d847c72cbcafcdd7e7",
       "skills": {
         "commit-discipline": {
           "hash": "sha256:8c8b0008f728aca76fe118df85a774e72eb07138d410078d629237c73f37a54f",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "session-start": {
-          "hash": "sha256:e12eab787585f9a34b2bf792d0d1d81a692e521bdece93dd6c61e35604a0bfdb",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:abed21330aaa353b4563dee2749001746cb2ff9bf450a61db5f9e6185e6aa2a4",
+          "source": "pg-baseline@0.177.0"
         },
         "session-close": {
-          "hash": "sha256:34d67cce7760f0d7352dccd759fb553c5fb4d29609546e7f3e878f607f7ed3f9",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:23f0d69a8749d8198403c2c7e2d2ac29017b335094eb4e03f196df19c804b268",
+          "source": "pg-baseline@0.177.0"
         },
         "tasknotes-cli": {
           "hash": "sha256:621117b67f5bae9abf745979aeddc4261e730a945a87ffc28efa1c955a087639",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "find-skills": {
           "hash": "sha256:b4d717dee9b5ebc9093cbb8530ea6785834b957d000cb52a45bd406ea2649a6d",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "context-maintenance": {
           "hash": "sha256:22d2371755278a24fe25ebfc99b13ba19b8431aff81c8b60635470fc627c0b38",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "release-maintenance": {
           "hash": "sha256:d11bee1dbc83b2f1468b73cecb32684dda8b104e105a61a77cdb4b7119357dcf",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "tag-audit": {
           "hash": "sha256:37da0db5ff19942f4b19ae1d21b58c368bcba9c54a3923d122750d2e2e70c4ec",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "testing-strategy": {
           "hash": "sha256:32486aeb44404e2d7ff99f4de898acb39386aea2d3b13e652b27bf45e4cfa182",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "api-design": {
           "hash": "sha256:61c0b43266122897b569605d5b30695b52b9334265a685db8dca1e476adb6e60",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "agents-maintenance": {
           "hash": "sha256:74cd3594d39125beb95c59cfda2ddef28ac35fa96fb4fa0e6c69e5138791f638",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "memory-bank": {
           "hash": "sha256:e2bb09607631814fa1ffca2a27e50d914b40e3670652239cfab210c991871703",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "context-architecture-audit": {
           "hash": "sha256:f308f371edfb302d49c44339e758e440df29f37d52cefba6d206cedc5a6d9f24",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "reviewer": {
-          "hash": "sha256:985c50690d563a238a5617cd582c11293b45bdc3a806f8eb4b49aebff31efb9e",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:a670d9151a96f1784419138c18bfd8418f160c9fd379615c5f3addb608a13d47",
+          "source": "pg-baseline@0.177.0"
         },
         "brainstorming": {
-          "hash": "sha256:970efc27de8bd4d1ad0d785fc7bbc69694fa0b3771664b2c2829357b38982a6d",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:e3aa765c2fb58d814d8160eb37819393c89a656432d59a884a6f9f69771c4d03",
+          "source": "pg-baseline@0.177.0"
         },
         "executing-plans": {
           "hash": "sha256:b3a6954cf205447bd17d83a70b2ea9aa504dfabbbaad2b73aa7be244af3b69bd",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "subagent-driven-development": {
-          "hash": "sha256:f11de5bbb13b64bf5f9ce6b9023df782c2abd6b1c2ec47c5bfdc37d0cf19eb76",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:86451dd9f057fc854d2a489e725524136b2a40fbbaf868d89fa1cc2226b85896",
+          "source": "pg-baseline@0.177.0"
         },
         "systematic-debugging": {
-          "hash": "sha256:d65285adf6ac5559dd9f92aea3a13e4b154d23c757273a8ea3433581563860a6",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:686708f03669822aefb17ac02daf86063cdf22d47643c231881467fd6b7a4f45",
+          "source": "pg-baseline@0.177.0"
         },
         "test-driven-development": {
           "hash": "sha256:e0a8e25a114839697903aa12b367585efb62844972bdce6418459b4cd41a9799",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "verification-before-completion": {
           "hash": "sha256:9d949c0a60524d27f16f43361dfdc846741687a91c88e62a80119a0f7a87dccd",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "writing-plans": {
           "hash": "sha256:a496417c4affce91774733260c864b2d3b390cd6bc05cec7c110b2ed45c0fcca",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "finishing-a-development-branch": {
           "hash": "sha256:978611ef2c293dfa30f6e39738c67e3c93037a171fe21536fe726236d651706d",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "pg-commit-review": {
           "hash": "sha256:69048bad3d671543c743a5859ef32f5b807d6b043c98aa91c8fa3c943708a4de",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "prototype-first": {
           "hash": "sha256:a13707b3fcb9bc9ce379fe0da53f68e7a11d752a587e49941796af114fe17505",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "goal": {
-          "hash": "sha256:fe89a14ae2b07188cc37c32a4280ac96371b221d844538e14ee6f8e77ba1582f",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:320165fc1bb104acf351aa018e986a3d13b65276728028018b9169abb2caf322",
+          "source": "pg-baseline@0.177.0"
         },
         "context-discipline": {
           "hash": "sha256:02d85620250cb849e4b7766f26ef7d58380c8b49c2f718315693b76e8d7b7e6b",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "linguagem-simples": {
           "hash": "sha256:424ce808018490b11deebda575ed3372c0538f37c4e34c66a4685f451bea6220",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "repoguardian": {
           "hash": "sha256:296d46874dcc9f70ce8f85dcbd6009fc139ba6db852feebdf6547a9da023c8d7",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "qa": {
           "hash": "sha256:51bbb1bc6e36b05582af2e32b1f277724efae22cb2842f3dda664f298dd15168",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "eval": {
           "hash": "sha256:cf8b51c0f7d1079a72be46abd7d7dac486f779d0c95845f29a9901f09bc297c3",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "pg-yagni": {
           "hash": "sha256:289cc9a0e4611d8fadd187340c470950f60bb08894739665874597e0475bb3b1",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "capture-lesson": {
           "hash": "sha256:81372ae6e0e0ef04dac348373a0f5b5e75a5c51e1d03fb663a7caff71743bd6a",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "package-adopt": {
-          "hash": "sha256:fe818f0b86daf08b06c364e5f786ca80dd68de1d331e3b57eaccc11ebc37d789",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:963de60cb79cf968a6b4497c8491d24ed6de80c5e71c5e9b670fe219c3441702",
+          "source": "pg-baseline@0.177.0"
         },
         "resolve-work": {
-          "hash": "sha256:bf1d9f1c6e5c6a2d416e4240cfa3d4f5b8f265d69eeda2128e6a6955cc84a5bf",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:00f934a418ca42e5457d0ee6344c709199eac89b4534c4e9599c96ca951fb672",
+          "source": "pg-baseline@0.177.0"
+        },
+        "obsolete-test-repair": {
+          "hash": "sha256:86fae6f766ddc74393d332229b5a6f81f86c585c3fe3d22ca0a09d574975a2d7",
+          "source": "pg-baseline@0.177.0"
         }
       },
       "commands": {
         "commit": {
           "hash": "sha256:47129fb2ce2356543eba3addc8ccf0a26af58e6a789216d2804982b446431636",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "commit-push": {
           "hash": "sha256:a147d491dcfcb0a1618eff8c46b03fc71fb17fef2aa00338b82c5fea414ee45a",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "session-start": {
           "hash": "sha256:372e8258cc4569981509b220e6b26d4715218a7cf10ff34a149b353f35a565af",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "session-close": {
           "hash": "sha256:b927364b5cd3cd63f461ccf9b51d852d9377486a93f6b6da591864abfa6e3d95",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "tn-plan-today": {
           "hash": "sha256:59539d5af72650561a51326a83ed9634aae3bfc241e9ee37d4602129aa6097d2",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "tn-plan-session": {
           "hash": "sha256:33bea383bf0eeaa0a54408c8c098cde1fa099833fa6e8f9aed71c95b838a480e",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "pg-goal": {
           "hash": "sha256:0d616245f70edad3142315caf2cb77ee7408af289330bf754be0eb3d1cb28555",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         }
       },
       "agents": {},
       "hooks": {
         "hash": "sha256:f3616a563f6ac7ef9344af6caf51e1e9b9589ee92538fb8990a49cdef124376d",
-        "source": "pg-baseline@0.169.0"
+        "source": "pg-baseline@0.177.0"
       }
     },
     "opencode": {
       "skills": {
         "commit-discipline": {
           "hash": "sha256:82a8a8004c0dfb489587c84d35b33471f23ca16ed566f120466d9a5eed797c36",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "session-start": {
-          "hash": "sha256:86750ba2c6fc9fa1423bfdf625e57769dc379cd9d9fa18cfc8ceae2670aa2f1f",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:fefdce820d446724b101b06f86bdd1f2c70e6dbaa250f9e7ffce997e1ba15cc7",
+          "source": "pg-baseline@0.177.0"
         },
         "session-close": {
-          "hash": "sha256:19d27d4c505a4407d14972a7ffb7bf3716b6eb4362aa5bbb82f5e151dafe45fb",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:bbeb67781cb87b468932b104ba08c002166ffca50361c6c882dd02beb9742136",
+          "source": "pg-baseline@0.177.0"
         },
         "tasknotes-cli": {
           "hash": "sha256:6da03e210c7281ece30b7ad744f61ae6caa852b32a5178568e493bf217218dae",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "find-skills": {
           "hash": "sha256:ab9a9a1aec17c73ded704b7d51e3c069dc8679192373d582c180256078dfbcbb",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "context-maintenance": {
           "hash": "sha256:52cc4a684847aca7f2b2c5c7f8cc84a019939d513ca40fd3ebaf5569e159956e",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "release-maintenance": {
           "hash": "sha256:c88734c3fbfbb368b110c7af099d5b7e416d55b5c1555e2c6d4c9f163941a201",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "tag-audit": {
           "hash": "sha256:29126e6af4aa91d1913cbd1fb68e3e406cbb63f4c663ccecad17fa2523091c65",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "testing-strategy": {
           "hash": "sha256:64a5bc18a3a631e0fffa42e58a2e5888a36f20c0343b3bee8b2d9956f12f76a1",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "api-design": {
           "hash": "sha256:e945bcba29c5502acceb9f389141358f650501192bfbaa77275018b1069d9545",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "agents-maintenance": {
           "hash": "sha256:53fbc011efe55857782ae2bdbe11bf1d94ae300e5bc948edfe118e281d48e277",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "memory-bank": {
           "hash": "sha256:bd827c9f9c4a26b9533a4919f7a760b34512489e423ffabf00667c20272a06ec",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "context-architecture-audit": {
           "hash": "sha256:3d9f19539f8148ce6296b333f87001856cdfe53d91d1e31d8d71bd4585c3bb42",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "reviewer": {
-          "hash": "sha256:b9ee83e445b8c3f9549ef89cfac194df95379ce0aca0d0da19a5407a96be43eb",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:16aaaa33b7ff2974ab5c16f26fab92f0978447c9dd90a52859d0436f5f3f2ca5",
+          "source": "pg-baseline@0.177.0"
         },
         "brainstorming": {
-          "hash": "sha256:4901ebe4b3c30bfc6c9033101c7f97827d2da2de053a78a3d278a50badc162ae",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:2d82e031380d673cc3ca86682990e56f993904617c5ff27697f6b2c5d8457e56",
+          "source": "pg-baseline@0.177.0"
         },
         "executing-plans": {
           "hash": "sha256:ec1bf1c40eab197051193a30b8d7475f4966826199d46f849fdd1dd332a28b3f",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "subagent-driven-development": {
-          "hash": "sha256:ed1bdb3741ecb9e4f482c4e594c6ce1edee61bfb6f91fe9a11545c14d91e9a40",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:b4c15e327cd248a2bf6f0005e3787b8e99a1ea8474b65aa48bda4ab738f5c6ec",
+          "source": "pg-baseline@0.177.0"
         },
         "systematic-debugging": {
-          "hash": "sha256:e4ec6fbe5219b3953bd4a568acf667dcd4794fb16b6ebeb4bc2eb48f7783cc64",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:792dd363e8a4fbeaf3b9a67a0b1a12ae918a9e64ee0f743f1f61802bef340b01",
+          "source": "pg-baseline@0.177.0"
         },
         "test-driven-development": {
           "hash": "sha256:d2a559b097ceb06425c2c051f298d473d7c0c4b6b422954cd27790e8a9c349a9",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "verification-before-completion": {
           "hash": "sha256:b0b43fbdbb8fc26fc5d9751b54bcf2737983aaadbef317481b15e08e770c6918",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "writing-plans": {
           "hash": "sha256:954997f6d61931788563639bb811e02fa4c1ac974a8e9d89b5416668a0398388",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "finishing-a-development-branch": {
           "hash": "sha256:d51c068283dda936384e60d4e70c48b5e1e6c6a41e501a3140f8ba4b2126df07",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "pg-commit-review": {
           "hash": "sha256:65080fc93a21566909a5a8af8cb009863ed36816b6d92616aaa15c61718c8e78",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "prototype-first": {
           "hash": "sha256:819910ce098c2f704cd3c098519e124a4f4bd5a90d879d9f13554d707b6da3a6",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "goal": {
-          "hash": "sha256:a03463ce45a2937c8b9df03857f4599a69f10af0c39924de5881286129fd93f2",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:2e497245e36cc27741015bc0d9f5437075b8fa02e9dd8b370143b36244b34230",
+          "source": "pg-baseline@0.177.0"
         },
         "context-discipline": {
           "hash": "sha256:93c7335074155da3dc51dba3fbffe68b4575020cc90307f930128e986104e914",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "linguagem-simples": {
           "hash": "sha256:37be4ab26abcc91107268f8c0499935d40f8102b2c63dd8dfeac160b88e927ac",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "repoguardian": {
           "hash": "sha256:0409c72054fcc7fc9515b9a51bd3220e087be73e4394f2d84a543c5dfc5d3143",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "qa": {
           "hash": "sha256:342b463543a94f2f7ec5b85dcbe096a87667eef45a940e9059499d2621544d69",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "eval": {
           "hash": "sha256:f504b0be1b5d3c3e485161b340f28dcdcef86f49e41e86b8cfe1f138b9f1b45f",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "pg-yagni": {
           "hash": "sha256:c8b1ecc4c399a56576d1afcf6032aa3ca2baf73ef4e695bc9a2912486e3455c8",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "capture-lesson": {
           "hash": "sha256:a43f0238bcb8029a78357401c27f426d3f8056a37b3f27a028752c1792f46a5f",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "package-adopt": {
-          "hash": "sha256:214aa2c25fa5033c435aab6782afa1d90da96635332b6ffb6493afbf88bf5ea8",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:06758610ccb54b830fb070e2dd6cdb0e687338cd1c154aecfaf14eeb4524d8b1",
+          "source": "pg-baseline@0.177.0"
         },
         "resolve-work": {
-          "hash": "sha256:563fbddf46e4d58e76610c200d9e19f93e2dc50056f182254351d51f47d05781",
-          "source": "pg-baseline@0.169.0"
+          "hash": "sha256:62b46db108668899e9be9785bb268471a92090a8c7d303086ab74564d7050037",
+          "source": "pg-baseline@0.177.0"
+        },
+        "obsolete-test-repair": {
+          "hash": "sha256:5757841c554ab7c708d6f8ce707c39ed107e25c1e1e9fd61b897ee8b25383b76",
+          "source": "pg-baseline@0.177.0"
         }
       },
       "commands": {
         "commit": {
           "hash": "sha256:b38cf90b6a375295a9c4066e4f7b166d265d457e1f7e80d51fb1464a76021922",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "commit-push": {
           "hash": "sha256:4765209ad4c1c2652d7c804cce1f760989047a734f6eeafbc4ff4b465e223058",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "session-start": {
           "hash": "sha256:22078dcae3ad4bbf79af57db5223cf47023c84ad70581a1f8ba7cf0739d51dab",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "session-close": {
           "hash": "sha256:ad25d40bfbe489357fd35100c00284c4c9a1c65bb0ee0634a7d27d1db97e2035",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "tn-plan-today": {
           "hash": "sha256:7f5dff2d8beeecf8dcf1947ad38503fc0523483ce915e5d7b49ea080849e40e5",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         },
         "tn-plan-session": {
           "hash": "sha256:a3b9e2ba73eac81e6c68e5106bfd702e3de1ffb8f49464d69cd6a7edc423b073",
-          "source": "pg-baseline@0.169.0"
+          "source": "pg-baseline@0.177.0"
         }
       },
       "agents": {}
