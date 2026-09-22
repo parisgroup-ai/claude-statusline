@@ -21,3 +21,21 @@ items:
         url: github.com/parisgroup-ai/claude-statusline#5
     startedAt: 2026-06-04
     doneAt: 2026-06-04
+  - id: rm-003
+    title: Resolução de Janela de Contexto e Suporte a Novos Modelos
+    horizon: now
+    status: idea
+    priority: high
+    created: 2026-08-16
+  - id: rm-004
+    title: Métricas de Latência, Token Usage e Segmentos em Tempo Real
+    horizon: next
+    status: idea
+    priority: normal
+    created: 2026-08-16
+  - id: rm-005
+    title: Harness de Evals para Formatação e Renderização da Statusline
+    horizon: next
+    status: idea
+    priority: normal
+    created: 2026-08-16
