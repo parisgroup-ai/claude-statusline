@@ -13,4 +13,4 @@
 - **ADR-0018**: Agent instructions and capabilities must be declared once in devkit config and materialized across target runtimes. (`pg-devkit adr view ADR-0018`)
 - **ADR-0019**: Performance and prompt tuning must follow autonomous closed loops with objective scoring and auto-revert on regression. (`pg-devkit adr view ADR-0019`)
 - **ADR-0021**: Structural codebase queries and refactors must verify dependency graphs and enforce drift gates against regression. (`pg-devkit adr view ADR-0021`)
-- **ADR-0023**: Fleet apps call gateway models only via pg-* aliases (incl. pg-stt/tts/image); swaps are infra-side env changes, never consumer code. (`pg-devkit adr view ADR-0023`)
+- **ADR-0023**: Fleet apps call gateway models only via pg-\* aliases (incl. pg-stt/tts/image); swaps are infra-side env changes, never consumer code. (`pg-devkit adr view ADR-0023`)
