@@ -11,7 +11,7 @@ permissions:
   packages: write
 
 env:
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GH_PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
   release:
