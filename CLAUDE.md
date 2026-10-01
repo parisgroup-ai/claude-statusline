@@ -5,7 +5,7 @@
 <!-- last-reviewed: 2026-07-31 -->
 
 ## Context
-- **What**: {{one-line}}
+- **What**: Bash statusline for Claude Code: context %, model, project, git branch, cost and token IO in one line
 - **Stack**: TypeScript, tsup, Vitest
 - **Published**: `@parisgroup-ai/claude-statusline`
 - **Parent**: [../CLAUDE.md](../CLAUDE.md)
