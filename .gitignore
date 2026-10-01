@@ -11,4 +11,7 @@ node_modules/
 .opencode/
 .grok/
 .kimi-code/
+.pgdk/session-brief.md
+.pgdk/session-brief-2.md
+.pgdk/briefs/
 # <<< pg-devkit managed <<<
