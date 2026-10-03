@@ -8,6 +8,8 @@ node_modules/
 .claude/.claude-plugin/
 .pgdk/.devkit-lock
 .pgdk/.start-cache.json
+.pgdk/delivery.local.json
+.pgdk/runtimes.local.json
 .opencode/
 .grok/
 .kimi-code/
