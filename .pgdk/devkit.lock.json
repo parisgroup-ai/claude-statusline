@@ -1,10 +1,10 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-10-06T18:46:49.896Z",
+  "generated_at": "2026-10-06T20:33:51.142Z",
   "sources": {
     "pg-baseline": {
-      "version": "0.195.1",
-      "tarball_sha256": "64a579fe27e77afc53e8b6e7130936f1a929dd47d2c667e3ff419713d0ea0015"
+      "version": "0.196.0",
+      "tarball_sha256": "0978461ac5f5383c2793c278941c9d749e2fa81ffcb317f62e700ca0e658a351"
     }
   },
   "view": {
