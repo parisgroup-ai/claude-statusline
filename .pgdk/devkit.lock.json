@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-10-12T13:25:30.480Z",
+  "generated_at": "2026-10-12T14:07:22.018Z",
   "sources": {
     "pg-baseline": {
       "version": "0.204.2",
@@ -8,9 +8,9 @@
     }
   },
   "view": {
-    "assets_hash": "sha256:42aa03e7bf3116e6c04293ce1ad3ef4d016db562f80fb1261c26390c7a107723",
+    "assets_hash": "sha256:e0b1b000b45f327781068cfbf7f486a0143ab49f945d5068a4d85296b18d9a6b",
     "asset_count": {
-      "skills": 35,
+      "skills": 37,
       "commands": 6,
       "agents": 0,
       "hooks": 0

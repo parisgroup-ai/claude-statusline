@@ -45,6 +45,8 @@ assets:
     - package-adopt
     - resolve-work
     - obsolete-test-repair
+    - agent-creator
+    - production-agent-advisor
   commands:
     - commit
     - commit-push
