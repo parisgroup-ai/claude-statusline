@@ -1,14 +1,14 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-10-13T02:52:02.766Z",
+  "generated_at": "2026-10-16T19:39:19.864Z",
   "sources": {
     "pg-baseline": {
-      "version": "0.207.1",
-      "tarball_sha256": "466e18dd53e46c55abc09aceb2aa8af4784fab19a36beecfcd5cddc499a62db7"
+      "version": "0.216.3",
+      "tarball_sha256": "30c107cd808caefcb093b249a4f341c40dbe0eca44fa6558bc57283809efde8c"
     }
   },
   "view": {
-    "assets_hash": "sha256:8b13c842449ab62e019a3cfd3fb83542143118274986c8bf81a8a87ecb144d2a",
+    "assets_hash": "sha256:1be990d4e3fa7595626e9dbd689cb37a4a911426233b393d8843b0112e770564",
     "asset_count": {
       "skills": 37,
       "commands": 6,
