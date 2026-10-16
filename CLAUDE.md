@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # claude-statusline
 
 > Shared package. Entry point.
