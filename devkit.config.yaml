@@ -1,5 +1,6 @@
 schema_version: 1
 profile_origin: library-cli
+gates: npm run lint && npm test
 plugins:
   - pg-baseline
 materialize:

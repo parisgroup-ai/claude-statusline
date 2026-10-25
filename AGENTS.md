@@ -1,5 +1,5 @@
-<!-- pg-frota:inicio v2 -->
-## Regras da Paris Group (frota v2)
+<!-- pg-frota:inicio v4 -->
+## Regras da Paris Group (frota v4)
 
 Bloco do `pg-devkit regras` (fonte: `packages/baseline/regras-frota.md` no pg-devkit); não edite aqui. Toda IA segue este bloco: Claude, Codex, Gemini, Grok, Cursor, Copilot e as outras. O resto deste arquivo traz as regras do produto; elas valem quando forem mais específicas.
 
@@ -27,8 +27,12 @@ Bloco do `pg-devkit regras` (fonte: `packages/baseline/regras-frota.md` no pg-de
 ### Gates (regra 3)
 - Nada chega à produção sem um portão automático antes. Mudança arriscada (migration, RLS, auth, dinheiro, contrato público, gates, `donos:`) ganha checagem automática mais forte, nunca uma pessoa a mais.
 - Migration só pelo script do repo que faz lint, ensaio e registro. Segredo nunca entra no código. Feature nova declara `Rollout:` no commit.
+- Escreveu migration: rode duas vezes no banco local (tem que ser idempotente) e rode os E2E que o seletor de impacto escolher, antes do PR ou do push.
 - Teste instável vira issue e nunca é apagado.
 - Commit só de docs não faz deploy.
+- Actions custam por minuto: junte os commits num push só e deixe o PR em rascunho até acabar.
+- Label de E2E completo (`trigger:full-e2e`, `run-e2e`) só com o PR pronto ou a pedido do dono.
+- Script ou agente na API do GitHub: leia `/rate_limit` antes, até 300 chamadas REST por execução, e prefira `git clone --filter=blob:none --sparse` para ler arquivos.
 
 ### Agente sozinho (regra 4)
 - Sem o dono na sessão (daemon, `claude -p`, nuvem), siga a política de decisão escrita do produto.
@@ -43,7 +47,7 @@ Bloco do `pg-devkit regras` (fonte: `packages/baseline/regras-frota.md` no pg-de
 - Este `AGENTS.md` é a fonte única. `CLAUDE.md`, `GEMINI.md`, `.cursor/rules/pg.mdc` e `.github/copilot-instructions.md` só apontam para cá.
 - Limite de 24 KB por `AGENTS.md`, na raiz e nas subpastas. O excesso vai para `docs/`, com link.
 - Regra que protege o produto mora aqui, não na memória de uma IA. O repo vence a regra pessoal.
-- Decisão diferente do padrão vai em `excecoes:` no `devkit.config.yaml`, com o link da ADR.
+- Fora do padrão: `excecoes:` no `devkit.config.yaml`, com `regra`, `motivo` e `link` da ADR.
 
 ### Pedir para cima (regra 8)
 Problema na plataforma vira issue (ou PR) no repo dono do assunto:

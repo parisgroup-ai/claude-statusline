@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# pre-push: secret scan (gitleaks) + shellcheck + bats tests (Padrão Paris v1 item 7).
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$ROOT"
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --no-banner --redact=100 --log-opts="origin/main..HEAD" "$ROOT"
+fi
+
+npm run lint
+npm test
