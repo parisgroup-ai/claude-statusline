@@ -1,5 +1,5 @@
-<!-- pg-frota:inicio v4 -->
-## Regras da Paris Group (frota v4)
+<!-- pg-frota:inicio v8 -->
+## Regras da Paris Group (frota v8)
 
 Bloco do `pg-devkit regras` (fonte: `packages/baseline/regras-frota.md` no pg-devkit); não edite aqui. Toda IA segue este bloco: Claude, Codex, Gemini, Grok, Cursor, Copilot e as outras. O resto deste arquivo traz as regras do produto; elas valem quando forem mais específicas.
 
@@ -30,7 +30,7 @@ Bloco do `pg-devkit regras` (fonte: `packages/baseline/regras-frota.md` no pg-de
 - Escreveu migration: rode duas vezes no banco local (tem que ser idempotente) e rode os E2E que o seletor de impacto escolher, antes do PR ou do push.
 - Teste instável vira issue e nunca é apagado.
 - Commit só de docs não faz deploy.
-- Actions custam por minuto: junte os commits num push só e deixe o PR em rascunho até acabar.
+- Actions custam por minuto e cada push na branch principal roda a suíte inteira. Trabalhe local: commits pequenos, gates locais, e **um push no fim do bloco** (ou no `/session-close`), não um por commit. PR fica em rascunho até acabar.
 - Label de E2E completo (`trigger:full-e2e`, `run-e2e`) só com o PR pronto ou a pedido do dono.
 - Script ou agente na API do GitHub: leia `/rate_limit` antes, até 300 chamadas REST por execução, e prefira `git clone --filter=blob:none --sparse` para ler arquivos.
 
@@ -63,8 +63,8 @@ Problema na plataforma vira issue (ou PR) no repo dono do assunto:
 Mande só uma reprodução mínima e o link do repo de origem. Nunca código, dado, print ou nome de cliente.
 
 ### Caixa de entrada e avisos (regra 9)
-- O que a Paris precisa deste projeto vira issue aqui, com a etiqueta `paris:caixa` (precisa do dono). `pg-devkit caixa` mostra essas issues e os PRs da org que esperam a sua revisão.
-- Para abrir um pedido aqui ou em outro repo: `pg-devkit caixa abrir "<o que foi>" [--para <repo>]`.
+- O que a Paris precisa deste projeto vira issue aqui, com a etiqueta `paris:caixa` (precisa do dono). `pg-devkit caixa` mostra as issues e os PRs que esperam você; os de merge seu (`--prioridade`) vêm antes de trabalho novo.
+- Pedido: `pg-devkit caixa abrir "<o que foi>" [--para <repo>]`.
 - Chame o dono na hora só por produção parada, dinheiro saindo, decisão pendente ou segurança, uma vez por dia por assunto. Parceiro e cliente recebem pela caixa.
 
 ### Agentes, Mission Control e Vordin (regras 10 a 12)
@@ -74,6 +74,12 @@ Mande só uma reprodução mínima e o link do repo de origem. Nunca código, da
 - O Vordin é o CRM único. Vai para lá só lead ou cliente em negociação real; prospecção fria e o cliente do cliente ficam no produto. Antes de mandar mensagem, consulte "não contatar". Número oficial de WhatsApp nunca é pareado em Baileys.
 - Site e anúncio entram pelo `/api/leads/intake` do Vordin.
 - Adoção é medida por projeto, nunca por pessoa.
+
+### Relato de trabalho (regra 13)
+- Ao começar: `pg-devkit trabalho direcao` e `pg-devkit trabalho relato --fase inicio`.
+- Ao fechar: `pg-devkit trabalho relato --fase fim` e `pg-devkit trabalho entrega "<o que entregou>" --prova <link>`.
+- Relato sincero, "não para controle, mas sim para tomada de decisão": o que travou, o que foi decidido, o que precisa de um sócio.
+- Nunca dado de cliente nem trecho da conversa. Sem entrega: diga o pendente. Conta entrega, não hora.
 <!-- pg-frota:fim -->
 
 <!-- >>> pg-devkit managed adr digest >>> -->
